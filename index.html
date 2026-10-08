@@ -271,6 +271,49 @@ button:disabled {
     display: none;
 }
 
+
+/* Exercise + food bank */
+.exercise-name,
+.meal-food,
+.meal-protein {
+    width: 100%;
+    box-sizing: border-box;
+}
+.exercise-name,
+.meal-food {
+    min-height: 42px;
+    background: #fff;
+}
+.meal-protein {
+    min-height: 42px;
+    resize: vertical;
+}
+.macro-summary {
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: #667085;
+}
+.nutrition-summary {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border: 1px solid #dbe2ea;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+.nutrition-summary strong {
+    margin-right: 16px;
+}
+@media (max-width: 700px) {
+    .exercise-name,
+    .meal-food,
+    .meal-protein,
+    .health-card select,
+    .health-card input {
+        font-size: 16px;
+    }
+}
+
 @media (max-width: 700px) {
 
     body {
@@ -783,43 +826,51 @@ button:disabled {
                     <div class="meal-grid" data-meal="Breakfast">
                         <div class="meal-cell"><strong>Breakfast</strong></div>
                         <div class="meal-cell">
-                            <input type="text" class="meal-food" placeholder="What I ate">
+                            <select class="meal-food" aria-label="Breakfast food"></select>
                         </div>
                         <div class="meal-cell">
-                            <input type="text" class="meal-protein" placeholder="Protein / Notes">
+                            <textarea class="meal-protein" rows="3" placeholder="Macros will appear automatically"></textarea>
                         </div>
                     </div>
 
                     <div class="meal-grid" data-meal="Lunch">
                         <div class="meal-cell"><strong>Lunch</strong></div>
                         <div class="meal-cell">
-                            <input type="text" class="meal-food" placeholder="What I ate">
+                            <select class="meal-food" aria-label="Lunch food"></select>
                         </div>
                         <div class="meal-cell">
-                            <input type="text" class="meal-protein" placeholder="Protein / Notes">
+                            <textarea class="meal-protein" rows="3" placeholder="Macros will appear automatically"></textarea>
                         </div>
                     </div>
 
                     <div class="meal-grid" data-meal="Dinner">
                         <div class="meal-cell"><strong>Dinner</strong></div>
                         <div class="meal-cell">
-                            <input type="text" class="meal-food" placeholder="What I ate">
+                            <select class="meal-food" aria-label="Dinner food"></select>
                         </div>
                         <div class="meal-cell">
-                            <input type="text" class="meal-protein" placeholder="Protein / Notes">
+                            <textarea class="meal-protein" rows="3" placeholder="Macros will appear automatically"></textarea>
                         </div>
                     </div>
 
                     <div class="meal-grid" data-meal="Snacks">
                         <div class="meal-cell"><strong>Snacks</strong></div>
                         <div class="meal-cell">
-                            <input type="text" class="meal-food" placeholder="What I ate">
+                            <select class="meal-food" aria-label="Snacks food"></select>
                         </div>
                         <div class="meal-cell">
-                            <input type="text" class="meal-protein" placeholder="Protein / Notes">
+                            <textarea class="meal-protein" rows="3" placeholder="Macros will appear automatically"></textarea>
                         </div>
                     </div>
 
+                </div>
+
+                <div class="nutrition-summary">
+                    <strong>Today's Nutrition</strong>
+                    <span id="totalCalories">Calories: 0 kcal</span> &nbsp;|&nbsp;
+                    <span id="totalProtein">Protein: 0 g</span> &nbsp;|&nbsp;
+                    <span id="totalCarbs">Carbs: 0 g</span> &nbsp;|&nbsp;
+                    <span id="totalFat">Fat: 0 g</span>
                 </div>
 
             </div>
@@ -893,6 +944,744 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_KEY
 );
 
+
+/* =========================================================
+   EXERCISE + FOOD BANK
+   ========================================================= */
+
+const EXERCISE_BANK = {
+  "Chest": [
+    "Barbell Bench Press",
+    "Incline Barbell Bench Press",
+    "Decline Barbell Bench Press",
+    "Flat Dumbbell Press",
+    "Incline Dumbbell Press",
+    "Decline Dumbbell Press",
+    "Dumbbell Fly",
+    "Incline Dumbbell Fly",
+    "Cable Chest Fly",
+    "Low-to-High Cable Fly",
+    "High-to-Low Cable Fly",
+    "Pec Deck Fly",
+    "Machine Chest Press",
+    "Incline Machine Chest Press",
+    "Smith Machine Bench Press",
+    "Smith Machine Incline Press",
+    "Push-Ups",
+    "Wide-Grip Push-Ups",
+    "Close-Grip Push-Ups",
+    "Decline Push-Ups",
+    "Incline Push-Ups",
+    "Chest Dips",
+    "Assisted Chest Dips",
+    "Dumbbell Pullover"
+  ],
+  "Back": [
+    "Deadlift",
+    "Conventional Deadlift",
+    "Romanian Deadlift",
+    "Rack Pull",
+    "Barbell Row",
+    "Pendlay Row",
+    "T-Bar Row",
+    "Chest-Supported Row",
+    "Dumbbell Row",
+    "Single-Arm Dumbbell Row",
+    "Seated Cable Row",
+    "Close-Grip Cable Row",
+    "Wide-Grip Cable Row",
+    "Machine Row",
+    "Lat Pulldown",
+    "Wide-Grip Lat Pulldown",
+    "Close-Grip Lat Pulldown",
+    "Neutral-Grip Lat Pulldown",
+    "Single-Arm Lat Pulldown",
+    "Straight-Arm Pulldown",
+    "Pull-Ups",
+    "Wide-Grip Pull-Ups",
+    "Close-Grip Pull-Ups",
+    "Neutral-Grip Pull-Ups",
+    "Chin-Ups",
+    "Assisted Pull-Ups"
+  ],
+  "Front Delts": [
+    "Barbell Overhead Press",
+    "Dumbbell Shoulder Press",
+    "Arnold Press",
+    "Machine Shoulder Press",
+    "Smith Machine Shoulder Press",
+    "Seated Dumbbell Press",
+    "Single-Arm Dumbbell Press",
+    "Landmine Press",
+    "Cable Shoulder Press",
+    "Front Dumbbell Raise",
+    "Cable Front Raise",
+    "Plate Front Raise"
+  ],
+  "Side Delts": [
+    "Dumbbell Lateral Raise",
+    "Seated Dumbbell Lateral Raise",
+    "Cable Lateral Raise",
+    "Single-Arm Cable Lateral Raise",
+    "Machine Lateral Raise",
+    "Leaning Cable Lateral Raise",
+    "Incline Lateral Raise"
+  ],
+  "Rear Delts": [
+    "Reverse Pec Deck",
+    "Rear Delt Dumbbell Fly",
+    "Bent-Over Dumbbell Reverse Fly",
+    "Cable Rear Delt Fly",
+    "Face Pull",
+    "Rear Delt Machine",
+    "Cable Y-Raise"
+  ],
+  "Triceps": [
+    "Close-Grip Bench Press",
+    "Skull Crushers",
+    "EZ-Bar Skull Crushers",
+    "Dumbbell Skull Crushers",
+    "Overhead Dumbbell Extension",
+    "Single-Arm Dumbbell Extension",
+    "Cable Overhead Extension",
+    "Rope Tricep Pushdown",
+    "Straight-Bar Pushdown",
+    "V-Bar Pushdown",
+    "Single-Arm Cable Pushdown",
+    "Reverse-Grip Pushdown",
+    "Bench Dips",
+    "Parallel Bar Dips",
+    "Assisted Dips",
+    "Diamond Push-Ups",
+    "Cable Kickback",
+    "Dumbbell Kickback"
+  ],
+  "Biceps": [
+    "Barbell Curl",
+    "EZ-Bar Curl",
+    "Dumbbell Curl",
+    "Alternating Dumbbell Curl",
+    "Hammer Curl",
+    "Cross-Body Hammer Curl",
+    "Incline Dumbbell Curl",
+    "Preacher Curl",
+    "EZ-Bar Preacher Curl",
+    "Dumbbell Preacher Curl",
+    "Machine Preacher Curl",
+    "Concentration Curl",
+    "Cable Curl",
+    "Bayesian Cable Curl",
+    "Single-Arm Cable Curl",
+    "Reverse Curl",
+    "Spider Curl"
+  ],
+  "Forearms": [
+    "Wrist Curl",
+    "Reverse Wrist Curl",
+    "Barbell Wrist Curl",
+    "Dumbbell Wrist Curl",
+    "Reverse Barbell Curl",
+    "Reverse Dumbbell Curl",
+    "Farmer's Walk",
+    "Dumbbell Farmer's Carry",
+    "Plate Pinch",
+    "Dead Hang",
+    "Towel Dead Hang",
+    "Wrist Roller",
+    "Suitcase Carry"
+  ],
+  "Traps": [
+    "Barbell Shrug",
+    "Dumbbell Shrug",
+    "Smith Machine Shrug",
+    "Cable Shrug",
+    "Behind-the-Back Shrug",
+    "Machine Shrug",
+    "Farmer's Walk",
+    "Upright Row",
+    "Rack Pull",
+    "Face Pull"
+  ],
+  "Quads": [
+    "Barbell Back Squat",
+    "Front Squat",
+    "Hack Squat",
+    "Smith Machine Squat",
+    "Goblet Squat",
+    "Leg Press",
+    "Single-Leg Leg Press",
+    "Bulgarian Split Squat",
+    "Walking Lunges",
+    "Reverse Lunges",
+    "Forward Lunges",
+    "Dumbbell Lunges",
+    "Barbell Lunges",
+    "Step-Ups",
+    "Leg Extension",
+    "Sissy Squat",
+    "Belt Squat"
+  ],
+  "Hamstrings": [
+    "Romanian Deadlift",
+    "Stiff-Leg Deadlift",
+    "Conventional Deadlift",
+    "Lying Leg Curl",
+    "Seated Leg Curl",
+    "Standing Leg Curl",
+    "Nordic Hamstring Curl",
+    "Glute-Ham Raise",
+    "Good Morning",
+    "Single-Leg Romanian Deadlift",
+    "Cable Leg Curl"
+  ],
+  "Glutes": [
+    "Barbell Hip Thrust",
+    "Smith Machine Hip Thrust",
+    "Dumbbell Hip Thrust",
+    "Glute Bridge",
+    "Bulgarian Split Squat",
+    "Reverse Lunge",
+    "Walking Lunge",
+    "Step-Up",
+    "Cable Kickback",
+    "Glute Kickback Machine",
+    "Cable Pull-Through",
+    "Sumo Squat",
+    "Sumo Deadlift",
+    "Romanian Deadlift",
+    "Hip Abduction Machine"
+  ],
+  "Calves": [
+    "Standing Calf Raise",
+    "Seated Calf Raise",
+    "Leg Press Calf Raise",
+    "Smith Machine Calf Raise",
+    "Single-Leg Calf Raise",
+    "Donkey Calf Raise",
+    "Standing Machine Calf Raise",
+    "Tibialis Raise"
+  ],
+  "Abs": [
+    "Crunch",
+    "Cable Crunch",
+    "Machine Crunch",
+    "Reverse Crunch",
+    "Hanging Leg Raise",
+    "Hanging Knee Raise",
+    "Captain's Chair Leg Raise",
+    "Lying Leg Raise",
+    "Lying Knee Raise",
+    "Decline Sit-Up",
+    "Sit-Up",
+    "Russian Twist",
+    "Bicycle Crunch",
+    "Mountain Climbers",
+    "Plank",
+    "Side Plank",
+    "Weighted Plank",
+    "Ab Wheel Rollout",
+    "Cable Woodchopper",
+    "Pallof Press",
+    "Dead Bug",
+    "Bird Dog",
+    "V-Ups",
+    "Toe Touches",
+    "Heel Touches",
+    "Flutter Kicks",
+    "Scissor Kicks",
+    "Dragon Flag"
+  ],
+  "Full Body / Compound": [
+    "Deadlift",
+    "Squat",
+    "Front Squat",
+    "Bench Press",
+    "Overhead Press",
+    "Clean",
+    "Power Clean",
+    "Clean and Press",
+    "Snatch",
+    "Push Press",
+    "Thruster",
+    "Turkish Get-Up",
+    "Kettlebell Swing",
+    "Farmer's Walk",
+    "Sled Push",
+    "Sled Pull",
+    "Battle Ropes",
+    "Burpees",
+    "Dumbbell Complex",
+    "Kettlebell Clean and Press"
+  ],
+  "Cardio": [
+    "Treadmill Walking",
+    "Incline Treadmill Walking",
+    "Treadmill Running",
+    "Jogging",
+    "Cycling",
+    "Stationary Bike",
+    "Spin Bike",
+    "Elliptical",
+    "Cross Trainer",
+    "Rowing Machine",
+    "Stair Climber",
+    "StairMaster",
+    "Stepper",
+    "Ski Erg",
+    "Assault Bike",
+    "Swimming",
+    "Jump Rope",
+    "Battle Ropes",
+    "Sled Push",
+    "Sled Drag"
+  ]
+};
+
+const FOOD_BANK = [
+  {
+    "food": "Whole Eggs",
+    "serving": "2 eggs",
+    "calories": "145 kcal",
+    "protein": "13 g",
+    "carbs": "1 g",
+    "fat": "10 g"
+  },
+  {
+    "food": "Egg Whites",
+    "serving": "4 whites",
+    "calories": "68 kcal",
+    "protein": "14 g",
+    "carbs": "1 g",
+    "fat": "0 g"
+  },
+  {
+    "food": "Chicken Breast",
+    "serving": "100 g",
+    "calories": "165 kcal",
+    "protein": "31 g",
+    "carbs": "0 g",
+    "fat": "4 g"
+  },
+  {
+    "food": "Paneer",
+    "serving": "100 g",
+    "calories": "260 kcal",
+    "protein": "18 g",
+    "carbs": "6 g",
+    "fat": "20 g"
+  },
+  {
+    "food": "Tofu",
+    "serving": "100 g",
+    "calories": "145 kcal",
+    "protein": "16 g",
+    "carbs": "3 g",
+    "fat": "9 g"
+  },
+  {
+    "food": "Greek Yoghurt",
+    "serving": "200 g",
+    "calories": "120 kcal",
+    "protein": "20 g",
+    "carbs": "7 g",
+    "fat": "2 g"
+  },
+  {
+    "food": "Curd",
+    "serving": "200 g",
+    "calories": "120 kcal",
+    "protein": "7 g",
+    "carbs": "9 g",
+    "fat": "6 g"
+  },
+  {
+    "food": "Whey Protein",
+    "serving": "1 scoop",
+    "calories": "120 kcal",
+    "protein": "24 g",
+    "carbs": "3 g",
+    "fat": "2 g"
+  },
+  {
+    "food": "Milk",
+    "serving": "250 ml",
+    "calories": "150 kcal",
+    "protein": "8 g",
+    "carbs": "12 g",
+    "fat": "8 g"
+  },
+  {
+    "food": "Soy Chunks",
+    "serving": "50 g dry",
+    "calories": "170 kcal",
+    "protein": "26 g",
+    "carbs": "16 g",
+    "fat": "1 g"
+  },
+  {
+    "food": "Oats",
+    "serving": "50 g",
+    "calories": "190 kcal",
+    "protein": "6 g",
+    "carbs": "32 g",
+    "fat": "3.5 g"
+  },
+  {
+    "food": "White Rice",
+    "serving": "150 g cooked",
+    "calories": "195 kcal",
+    "protein": "4 g",
+    "carbs": "42 g",
+    "fat": "0.5 g"
+  },
+  {
+    "food": "Brown Rice",
+    "serving": "150 g cooked",
+    "calories": "165 kcal",
+    "protein": "4 g",
+    "carbs": "34 g",
+    "fat": "1.5 g"
+  },
+  {
+    "food": "Roti",
+    "serving": "1 medium",
+    "calories": "100 kcal",
+    "protein": "3 g",
+    "carbs": "18 g",
+    "fat": "2 g"
+  },
+  {
+    "food": "Whole Wheat Bread",
+    "serving": "2 slices",
+    "calories": "140 kcal",
+    "protein": "6 g",
+    "carbs": "24 g",
+    "fat": "2 g"
+  },
+  {
+    "food": "Banana",
+    "serving": "1 medium",
+    "calories": "105 kcal",
+    "protein": "1 g",
+    "carbs": "27 g",
+    "fat": "0 g"
+  },
+  {
+    "food": "Apple",
+    "serving": "1 medium",
+    "calories": "95 kcal",
+    "protein": "0.5 g",
+    "carbs": "25 g",
+    "fat": "0 g"
+  },
+  {
+    "food": "Potato",
+    "serving": "150 g",
+    "calories": "115 kcal",
+    "protein": "3 g",
+    "carbs": "26 g",
+    "fat": "0 g"
+  },
+  {
+    "food": "Sweet Potato",
+    "serving": "150 g",
+    "calories": "135 kcal",
+    "protein": "3 g",
+    "carbs": "31 g",
+    "fat": "0 g"
+  },
+  {
+    "food": "Corn",
+    "serving": "100 g",
+    "calories": "96 kcal",
+    "protein": "3 g",
+    "carbs": "21 g",
+    "fat": "1.5 g"
+  },
+  {
+    "food": "Peanut Butter",
+    "serving": "16 g",
+    "calories": "95 kcal",
+    "protein": "4 g",
+    "carbs": "3 g",
+    "fat": "8 g"
+  },
+  {
+    "food": "Almonds",
+    "serving": "20 g",
+    "calories": "116 kcal",
+    "protein": "4 g",
+    "carbs": "4 g",
+    "fat": "10 g"
+  },
+  {
+    "food": "Walnuts",
+    "serving": "20 g",
+    "calories": "130 kcal",
+    "protein": "3 g",
+    "carbs": "3 g",
+    "fat": "13 g"
+  },
+  {
+    "food": "Peanuts",
+    "serving": "30 g",
+    "calories": "170 kcal",
+    "protein": "8 g",
+    "carbs": "5 g",
+    "fat": "15 g"
+  },
+  {
+    "food": "Cashews",
+    "serving": "20 g",
+    "calories": "110 kcal",
+    "protein": "4 g",
+    "carbs": "6 g",
+    "fat": "9 g"
+  },
+  {
+    "food": "Chia Seeds",
+    "serving": "15 g",
+    "calories": "73 kcal",
+    "protein": "2.5 g",
+    "carbs": "6 g",
+    "fat": "4.5 g"
+  },
+  {
+    "food": "Flax Seeds",
+    "serving": "15 g",
+    "calories": "80 kcal",
+    "protein": "3 g",
+    "carbs": "4 g",
+    "fat": "6 g"
+  },
+  {
+    "food": "Olive Oil",
+    "serving": "15 ml",
+    "calories": "120 kcal",
+    "protein": "0 g",
+    "carbs": "0 g",
+    "fat": "14 g"
+  },
+  {
+    "food": "Protein Bar",
+    "serving": "1 bar",
+    "calories": "215 kcal",
+    "protein": "20 g",
+    "carbs": "22 g",
+    "fat": "8 g"
+  },
+  {
+    "food": "Mass Gainer",
+    "serving": "1 serving",
+    "calories": "600 kcal",
+    "protein": "25 g",
+    "carbs": "100 g",
+    "fat": "8 g"
+  },
+  {
+    "food": "Protein Shake + Milk",
+    "serving": "1 scoop + 250 ml",
+    "calories": "270 kcal",
+    "protein": "32 g",
+    "carbs": "15 g",
+    "fat": "10 g"
+  },
+  {
+    "food": "Cucumber",
+    "serving": "100 g",
+    "calories": "15 kcal",
+    "protein": "0.7 g",
+    "carbs": "3.6 g",
+    "fat": "0.1 g"
+  },
+  {
+    "food": "Tomato",
+    "serving": "100 g",
+    "calories": "18 kcal",
+    "protein": "0.9 g",
+    "carbs": "3.9 g",
+    "fat": "0.2 g"
+  },
+  {
+    "food": "Spinach",
+    "serving": "100 g",
+    "calories": "23 kcal",
+    "protein": "2.9 g",
+    "carbs": "3.6 g",
+    "fat": "0.4 g"
+  },
+  {
+    "food": "Broccoli",
+    "serving": "100 g",
+    "calories": "34 kcal",
+    "protein": "2.8 g",
+    "carbs": "7 g",
+    "fat": "0.4 g"
+  },
+  {
+    "food": "Cauliflower",
+    "serving": "100 g",
+    "calories": "25 kcal",
+    "protein": "1.9 g",
+    "carbs": "5 g",
+    "fat": "0.3 g"
+  },
+  {
+    "food": "Capsicum",
+    "serving": "100 g",
+    "calories": "31 kcal",
+    "protein": "1 g",
+    "carbs": "6 g",
+    "fat": "0.3 g"
+  },
+  {
+    "food": "Carrot",
+    "serving": "100 g",
+    "calories": "41 kcal",
+    "protein": "0.9 g",
+    "carbs": "10 g",
+    "fat": "0.2 g"
+  },
+  {
+    "food": "Cabbage",
+    "serving": "100 g",
+    "calories": "25 kcal",
+    "protein": "1.3 g",
+    "carbs": "6 g",
+    "fat": "0.1 g"
+  },
+  {
+    "food": "Mushrooms",
+    "serving": "100 g",
+    "calories": "22 kcal",
+    "protein": "3.1 g",
+    "carbs": "3.3 g",
+    "fat": "0.3 g"
+  },
+  {
+    "food": "Zucchini",
+    "serving": "100 g",
+    "calories": "17 kcal",
+    "protein": "1.2 g",
+    "carbs": "3.1 g",
+    "fat": "0.3 g"
+  },
+  {
+    "food": "Green Beans",
+    "serving": "100 g",
+    "calories": "31 kcal",
+    "protein": "1.8 g",
+    "carbs": "7 g",
+    "fat": "0.2 g"
+  }
+];
+
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function populateExerciseSelect(select, selectedValue = "") {
+    let found = false;
+    select.innerHTML = '<option value="">Select exercise</option>';
+
+    Object.entries(EXERCISE_BANK).forEach(([group, exercises]) => {
+        const optgroup = document.createElement("optgroup");
+        optgroup.label = group;
+        exercises.forEach(name => {
+            const option = document.createElement("option");
+            option.value = name;
+            option.textContent = name;
+            if (name === selectedValue) {
+                option.selected = true;
+                found = true;
+            }
+            optgroup.appendChild(option);
+        });
+        select.appendChild(optgroup);
+    });
+
+    if (selectedValue && !found) {
+        const option = document.createElement("option");
+        option.value = selectedValue;
+        option.textContent = selectedValue + " (saved)";
+        option.selected = true;
+        select.appendChild(option);
+    }
+}
+
+function populateFoodSelect(select, selectedValue = "") {
+    select.innerHTML = '<option value="">Select food</option>';
+    let found = false;
+
+    FOOD_BANK.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.food;
+        option.textContent = item.food + " — " + item.serving;
+        if (item.food === selectedValue) {
+            option.selected = true;
+            found = true;
+        }
+        select.appendChild(option);
+    });
+
+    if (selectedValue && !found) {
+        const option = document.createElement("option");
+        option.value = selectedValue;
+        option.textContent = selectedValue + " (saved)";
+        option.selected = true;
+        select.appendChild(option);
+    }
+}
+
+function getFood(itemName) {
+    return FOOD_BANK.find(item => item.food === itemName) || null;
+}
+
+function foodMacroText(item) {
+    if (!item) return "";
+    return `Serving: ${item.serving}\nCalories: ${item.calories} | Protein: ${item.protein} | Carbs: ${item.carbs} | Fat: ${item.fat}`;
+}
+
+function updateMealMacros(row) {
+    const select = row.querySelector(".meal-food");
+    const notes = row.querySelector(".meal-protein");
+    const item = getFood(select.value);
+    notes.value = foodMacroText(item);
+    updateNutritionTotals();
+}
+
+function initialiseMealRows() {
+    document.querySelectorAll("#mealRows .meal-grid").forEach(row => {
+        const select = row.querySelector(".meal-food");
+        populateFoodSelect(select);
+        select.addEventListener("change", () => updateMealMacros(row));
+    });
+    updateNutritionTotals();
+}
+
+function updateNutritionTotals() {
+    let calories = 0, protein = 0, carbs = 0, fat = 0;
+
+    document.querySelectorAll("#mealRows .meal-grid").forEach(row => {
+        const item = getFood(row.querySelector(".meal-food").value);
+        if (!item) return;
+
+        calories += parseFloat(item.calories) || 0;
+        protein += parseFloat(item.protein) || 0;
+        carbs += parseFloat(item.carbs) || 0;
+        fat += parseFloat(item.fat) || 0;
+    });
+
+    document.getElementById("totalCalories").textContent = `Calories: ${Number.isInteger(calories) ? calories : calories.toFixed(1)} kcal`;
+    document.getElementById("totalProtein").textContent = `Protein: ${Number.isInteger(protein) ? protein : protein.toFixed(1)} g`;
+    document.getElementById("totalCarbs").textContent = `Carbs: ${Number.isInteger(carbs) ? carbs : carbs.toFixed(1)} g`;
+    document.getElementById("totalFat").textContent = `Fat: ${Number.isInteger(fat) ? fat : fat.toFixed(1)} g`;
+}
 
 /* =========================================================
    ELEMENTS
@@ -1118,12 +1907,7 @@ function addExercise(exercise = null) {
     row.innerHTML = `
 
         <div class="cell">
-            <input
-                type="text"
-                class="exercise-name"
-                placeholder="Exercise name"
-                value="${exercise?.exercise_name || ""}"
-            >
+            <select class="exercise-name" aria-label="Exercise name"></select>
         </div>
 
         <div class="cell">
@@ -1182,6 +1966,9 @@ function addExercise(exercise = null) {
     `;
 
     exerciseRows.appendChild(row);
+
+    const exerciseSelect = row.querySelector(".exercise-name");
+    populateExerciseSelect(exerciseSelect, exercise?.exercise_name || "");
 }
 
 
@@ -1248,6 +2035,7 @@ function createInitialExercises() {
 }
 
 createInitialExercises();
+initialiseMealRows();
 
 
 /* =========================================================
@@ -1619,15 +2407,18 @@ async function loadDay() {
 
             if (row) {
 
-                row.querySelector(".meal-food").value =
-                    meal.what_i_ate || "";
+                const foodSelect = row.querySelector(".meal-food");
+                populateFoodSelect(foodSelect, meal.what_i_ate || "");
 
+                const bankItem = getFood(meal.what_i_ate || "");
                 row.querySelector(".meal-protein").value =
-                    meal.protein_notes || "";
+                    meal.protein_notes || foodMacroText(bankItem);
 
             }
 
         });
+
+        updateNutritionTotals();
 
     }
 
@@ -1642,10 +2433,15 @@ function clearMeals() {
 
     document.querySelectorAll("#mealRows .meal-grid").forEach(row => {
 
-        row.querySelector(".meal-food").value = "";
-        row.querySelector(".meal-protein").value = "";
+        const select = row.querySelector(".meal-food");
+        const notes = row.querySelector(".meal-protein");
+
+        select.value = "";
+        notes.value = "";
 
     });
+
+    updateNutritionTotals();
 
 }
 
