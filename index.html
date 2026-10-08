@@ -1946,6 +1946,10 @@ const authBox = document.getElementById("authBox");
 const appContent = document.getElementById("appContent");
 const loggedInEmail = document.getElementById("loggedInEmail");
 
+/* GLOBAL APP STATE - declared before any startup functions run */
+let currentUser = null;
+let userProfile = null;
+
 
 /* =========================================================
    DEFAULT DATE
@@ -2298,7 +2302,7 @@ initialiseMealRows();
 /* =========================================================
    PROFILE + TARGET CALCULATOR + CHARTS
    ========================================================= */
-let userProfile = null;
+
 let sleepChartInstance = null, calorieChartInstance = null, macroChartInstance = null;
 
 const ACTIVITY_FACTORS = {
@@ -2435,7 +2439,7 @@ function renderNutritionCharts() {
    AUTH STATE
    ========================================================= */
 
-let currentUser = null;
+
 
 
 /* =========================================================
