@@ -1914,6 +1914,17 @@ function updateMealMacros(row) {
     notes.value=lines.join("\n"); updateNutritionTotals();
 }
 
+/* GLOBAL APP STATE - declared before any startup functions run */
+let currentUser = null;
+let userProfile = null;
+let sleepChartInstance = null;
+let calorieChartInstance = null;
+let macroChartInstance = null;
+
+const ACTIVITY_FACTORS = {
+    sedentary: 1.20, light: 1.375, moderate: 1.55, very: 1.725, extreme: 1.90
+};
+
 function initialiseMealRows() {
     document.querySelectorAll("#mealRows .meal-grid").forEach(row => {
         const list=row.querySelector(".meal-food-list"); list.innerHTML=""; createMealFoodItem(row);
@@ -1945,18 +1956,6 @@ const exerciseRows = document.getElementById("exerciseRows");
 const authBox = document.getElementById("authBox");
 const appContent = document.getElementById("appContent");
 const loggedInEmail = document.getElementById("loggedInEmail");
-
-/* GLOBAL APP STATE - declared before any startup functions run */
-let currentUser = null;
-let userProfile = null;
-let sleepChartInstance = null;
-let calorieChartInstance = null;
-let macroChartInstance = null;
-
-const ACTIVITY_FACTORS = {
-    sedentary: 1.20, light: 1.375, moderate: 1.55, very: 1.725, extreme: 1.90
-};
-
 
 /* =========================================================
    DEFAULT DATE
