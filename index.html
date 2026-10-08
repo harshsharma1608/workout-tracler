@@ -134,6 +134,19 @@ button:disabled {
     cursor: not-allowed;
 }
 
+.date-nav {
+    display: flex;
+    gap: 8px;
+    align-self: end;
+}
+
+.nav-btn {
+    background: #eef3fb;
+    color: #172033;
+    border: 1px solid #cdd3da;
+    flex: 1;
+}
+
 .add-btn {
     background: #3f7fe5;
     color: white;
@@ -260,28 +273,241 @@ button:disabled {
 
 @media (max-width: 700px) {
 
+    body {
+        background: #f4f6f8;
+        -webkit-text-size-adjust: 100%;
+    }
+
     .container {
-        width: 96%;
-        margin: 10px auto;
+        width: 100%;
+        margin: 0;
+        padding: 8px;
+    }
+
+    .header {
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 10px;
     }
 
     .header h1 {
-        font-size: 20px;
+        font-size: 21px;
+    }
+
+    .header p {
+        font-size: 13px;
+    }
+
+    .auth-box,
+    .section {
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    .auth-box {
+        padding: 14px;
+    }
+
+    .auth-box h2 {
+        font-size: 19px;
+    }
+
+    .auth-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .auth-row button {
+        width: 100%;
+        min-height: 44px;
+    }
+
+    input,
+    textarea {
+        font-size: 16px;
+        min-height: 44px;
+    }
+
+    textarea {
+        min-height: 90px;
+    }
+
+    button {
+        min-height: 44px;
     }
 
     .controls {
         grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .control-box {
+        padding: 10px;
+    }
+
+    .control-box label {
+        font-size: 12px;
+    }
+
+    .date-nav {
+        grid-column: span 2;
+        width: 100%;
+    }
+
+    .nav-btn {
+        min-height: 44px;
     }
 
     .add-btn {
         grid-column: span 2;
         width: 100%;
+        min-height: 46px;
     }
 
-    .auth-row {
-        grid-template-columns: 1fr;
+    .section-title {
+        padding: 12px;
+        font-size: 15px;
+    }
+
+    .workout-table,
+    .meal-table {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .workout-grid {
+        min-width: 760px;
+        grid-template-columns: 1.4fr 0.9fr 0.9fr 0.9fr 0.9fr 1.3fr;
+    }
+
+    .cell,
+    .meal-cell {
+        padding: 7px;
+    }
+
+    .cell input,
+    .meal-cell input {
+        min-height: 42px;
+        font-size: 15px;
+    }
+
+    .header-cell {
+        font-size: 12px;
+    }
+
+    .remove-btn {
+        min-height: 34px;
+        padding: 5px 8px;
+    }
+
+    .meal-grid {
+        min-width: 600px;
+        grid-template-columns: 120px 1.5fr 1fr;
+    }
+
+    .reflection {
+        padding: 12px;
+    }
+
+    .save-btn {
+        min-height: 50px;
+        font-size: 16px;
+        margin-top: 8px;
+    }
+
+    #loggedInEmail {
+        display: block;
+        max-width: 210px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }
+
+/* HISTORY */
+.history-actions {
+    display: flex;
+    gap: 10px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+}
+.history-btn {
+    background: #172033;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+.history-btn.secondary {
+    background: #eef3fb;
+    color: #172033;
+    border: 1px solid #cdd3da;
+}
+.history-panel {
+    display: none;
+    margin: 0 0 20px;
+}
+.history-panel.active { display: block; }
+.history-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+.history-head h2 { margin: 0; font-size: 22px; }
+.history-list { display: grid; gap: 10px; }
+.history-card {
+    background: #fff;
+    border: 1px solid #dfe3e8;
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+}
+.history-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+.history-date { font-weight: 700; color: #172033; }
+.history-day { color: #667085; font-size: 13px; margin-top: 2px; }
+.history-summary {
+    color: #4b5563;
+    font-size: 14px;
+    margin-top: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.history-open {
+    border: none;
+    background: #172033;
+    color: #fff;
+    border-radius: 7px;
+    padding: 8px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.history-empty {
+    padding: 24px;
+    text-align: center;
+    color: #667085;
+    background: #fff;
+    border: 1px dashed #cdd3da;
+    border-radius: 10px;
+}
+.history-loading { color: #667085; padding: 12px 0; }
+@media (max-width: 700px) {
+    .history-card-top { align-items: flex-start; }
+    .history-open { padding: 9px 11px; }
+    .history-head h2 { font-size: 19px; }
+}
+
 </style>
 </head>
 
@@ -362,10 +588,34 @@ button:disabled {
                 <input type="text" id="day" readonly>
             </div>
 
+            <div class="date-nav">
+                <button type="button" class="nav-btn" onclick="changeDate(-1)">
+                    ← Previous
+                </button>
+                <button type="button" class="nav-btn" onclick="changeDate(1)">
+                    Next →
+                </button>
+            </div>
+
             <button class="add-btn" onclick="addExercise()">
                 + Add Exercise
             </button>
 
+        </div>
+
+        <div class="history-actions">
+            <button type="button" class="history-btn" onclick="goToToday()">Today</button>
+            <button type="button" class="history-btn secondary" onclick="toggleHistory()">History</button>
+        </div>
+
+        <div id="historyPanel" class="history-panel">
+            <div class="history-head">
+                <h2>Workout History</h2>
+                <button type="button" class="history-btn secondary" onclick="toggleHistory(false)">Close</button>
+            </div>
+            <div id="historyList" class="history-list">
+                <div class="history-loading">Loading history...</div>
+            </div>
         </div>
 
 
@@ -614,6 +864,147 @@ dateInput.addEventListener("change", async function() {
 });
 
 updateDay();
+
+
+/* =========================================================
+   DATE NAVIGATION
+   ========================================================= */
+
+async function changeDate(days) {
+
+    if (!dateInput.value) {
+        return;
+    }
+
+    const currentDate = new Date(dateInput.value + "T00:00:00");
+    currentDate.setDate(currentDate.getDate() + days);
+
+    const yyyy = currentDate.getFullYear();
+    const mm = String(currentDate.getMonth() + 1).padStart(2, "0");
+    const dd = String(currentDate.getDate()).padStart(2, "0");
+
+    dateInput.value = `${yyyy}-${mm}-${dd}`;
+
+    updateDay();
+
+    if (currentUser) {
+        await loadDay();
+    }
+}
+
+
+
+/* =========================================================
+   TODAY + HISTORY
+   ========================================================= */
+
+function getTodayString() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+}
+
+async function goToToday() {
+    dateInput.value = getTodayString();
+    updateDay();
+
+    if (currentUser) {
+        await loadDay();
+    }
+
+    const panel = document.getElementById("historyPanel");
+    if (panel) panel.classList.remove("active");
+}
+
+async function toggleHistory(force) {
+    const panel = document.getElementById("historyPanel");
+    if (!panel) return;
+
+    const shouldOpen = typeof force === "boolean"
+        ? force
+        : !panel.classList.contains("active");
+
+    panel.classList.toggle("active", shouldOpen);
+
+    if (shouldOpen) {
+        await loadHistory();
+        panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+}
+
+function formatHistoryDate(dateString) {
+    const date = new Date(dateString + "T00:00:00");
+    return date.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    });
+}
+
+async function loadHistory() {
+    const list = document.getElementById("historyList");
+    if (!list) return;
+
+    if (!currentUser) {
+        list.innerHTML = '<div class="history-empty">Please login to view your history.</div>';
+        return;
+    }
+
+    list.innerHTML = '<div class="history-loading">Loading history...</div>';
+
+    const { data: logs, error } = await supabaseClient
+        .from("daily_logs")
+        .select("id, log_date, day, todays_win, improvement")
+        .eq("user_id", currentUser.id)
+        .order("log_date", { ascending: false })
+        .limit(100);
+
+    if (error) {
+        console.error(error);
+        list.innerHTML = '<div class="history-empty">Could not load history. Please try again.</div>';
+        return;
+    }
+
+    if (!logs || logs.length === 0) {
+        list.innerHTML = '<div class="history-empty">No saved days yet. Save your first day and it will appear here.</div>';
+        return;
+    }
+
+    list.innerHTML = logs.map(log => {
+        const summary = log.todays_win || log.improvement || "Workout and daily log saved";
+        return `
+            <div class="history-card">
+                <div class="history-card-top">
+                    <div>
+                        <div class="history-date">${formatHistoryDate(log.log_date)}</div>
+                        <div class="history-day">${escapeHtml(log.day || "")}</div>
+                    </div>
+                    <button type="button" class="history-open" onclick="openHistoryDate('${log.log_date}')">Open</button>
+                </div>
+                <div class="history-summary">${escapeHtml(summary)}</div>
+            </div>
+        `;
+    }).join("");
+}
+
+async function openHistoryDate(dateString) {
+    dateInput.value = dateString;
+    updateDay();
+    await loadDay();
+    document.getElementById("historyPanel").classList.remove("active");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
 
 /* =========================================================
@@ -1353,6 +1744,11 @@ async function saveDay() {
             "Today's workout, meals and reflection have been saved successfully.",
             "success"
         );
+
+        const historyPanel = document.getElementById("historyPanel");
+        if (historyPanel && historyPanel.classList.contains("active")) {
+            await loadHistory();
+        }
 
     } catch (error) {
 
