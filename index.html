@@ -2365,22 +2365,65 @@ function openProfileModal(edit=false) {
 function closeProfileModal(){ document.getElementById("profileModal").classList.remove("active"); }
 
 async function saveProfile() {
-    const age=+profileAge.value, height=+profileHeight.value, weight=+profileWeight.value;
-    const gender=profileGender.value, activity=profileActivity.value, goal=profileGoal.value;
-    if(!(age&&height&&weight&&gender&&activity&&goal)){ showMessage("profileMessage","Please complete all required fields.","error"); return; }
-    const t=calculateTargets(age,gender,height,weight,activity,goal);
-    const payload={
-      user_id:currentUser.id, age, gender, height_cm:height, weight_kg:weight,
-      activity_level:activity, activity_factor:ACTIVITY_FACTORS[activity], goal,
-      target_weight: document.getElementById("profileTargetWeight").value||null,
-      workout_days: document.getElementById("profileWorkoutDays").value||null,
-      avg_steps: document.getElementById("profileAvgSteps").value||null,
-      bmr:t.bmr, tdee:t.tdee, calorie_target:Math.round(t.calorieTarget/50)*50,
-      protein_target:t.protein, fat_target:t.fat, carbs_target:t.carbs
-    };
-    const {data,error}=await supabaseClient.from("user_profiles").upsert(payload,{onConflict:"user_id"}).select().single();
-    if(error){ showMessage("profileMessage","Could not save profile: "+error.message,"error"); return; }
-    userProfile=data; closeProfileModal(); renderTargetSummary(); await loadProgressCharts();
+    try {
+        const age = Number(document.getElementById("profileAge").value);
+        const height = Number(document.getElementById("profileHeight").value);
+        const weight = Number(document.getElementById("profileWeight").value);
+        const gender = document.getElementById("profileGender").value;
+        const activity = document.getElementById("profileActivity").value;
+        const goal = document.getElementById("profileGoal").value;
+
+        if (!(age > 0 && height > 0 && weight > 0 && gender && activity && goal)) {
+            showMessage("profileMessage", "Please complete all required fields.", "error");
+            return;
+        }
+
+        if (!currentUser || !currentUser.id) {
+            showMessage("profileMessage", "Your login session has expired. Please log in again.", "error");
+            return;
+        }
+
+        const t = calculateTargets(age, gender, height, weight, activity, goal);
+        const payload = {
+            user_id: currentUser.id,
+            age: age,
+            gender: gender,
+            height_cm: height,
+            weight_kg: weight,
+            activity_level: activity,
+            activity_factor: ACTIVITY_FACTORS[activity],
+            goal: goal,
+            target_weight: document.getElementById("profileTargetWeight").value === "" ? null : Number(document.getElementById("profileTargetWeight").value),
+            workout_days: document.getElementById("profileWorkoutDays").value === "" ? null : Number(document.getElementById("profileWorkoutDays").value),
+            avg_steps: document.getElementById("profileAvgSteps").value === "" ? null : Number(document.getElementById("profileAvgSteps").value),
+            bmr: t.bmr,
+            tdee: t.tdee,
+            calorie_target: Math.round(t.calorieTarget / 50) * 50,
+            protein_target: t.protein,
+            fat_target: t.fat,
+            carbs_target: t.carbs
+        };
+
+        const { data, error } = await supabaseClient
+            .from("user_profiles")
+            .upsert(payload, { onConflict: "user_id" })
+            .select()
+            .single();
+
+        if (error) {
+            console.error("Profile save error:", error);
+            showMessage("profileMessage", "Could not save profile: " + error.message, "error");
+            return;
+        }
+
+        userProfile = data;
+        closeProfileModal();
+        renderTargetSummary();
+        await loadProgressCharts();
+    } catch (err) {
+        console.error("Unexpected profile save error:", err);
+        showMessage("profileMessage", "Something went wrong while saving. Please check the browser console.", "error");
+    }
 }
 
 function renderTargetSummary() {
