@@ -425,6 +425,54 @@ button:disabled {
     }
 }
 
+
+/* DAILY HEALTH */
+.health-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    padding: 14px;
+}
+.health-card {
+    background: #f8fafc;
+    border: 1px solid #dfe3e8;
+    border-radius: 10px;
+    padding: 14px;
+}
+.health-card label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+.health-card input,
+.health-card select {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid #cdd3da;
+    border-radius: 7px;
+    padding: 9px;
+    font-size: 15px;
+    background: #fff;
+}
+.health-rating {
+    display: block;
+    margin-top: 9px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #667085;
+}
+.health-rating.poor { color: #b42318; }
+.health-rating.fair { color: #b54708; }
+.health-rating.good { color: #087443; }
+.health-rating.very-good { color: #175cd3; }
+.health-rating.best { color: #05603a; }
+@media (max-width: 700px) {
+    .health-grid {
+        grid-template-columns: 1fr;
+        padding: 12px;
+    }
+}
+
 /* HISTORY */
 .history-actions {
     display: flex;
@@ -618,6 +666,42 @@ button:disabled {
             </div>
         </div>
 
+
+        <!-- DAILY HEALTH -->
+        <div class="section">
+            <div class="section-title">Daily Health</div>
+            <div class="health-grid">
+                <div class="health-card">
+                    <label for="steps">Daily Steps</label>
+                    <input type="number" id="steps" min="0" step="100" placeholder="e.g. 8000">
+                    <span class="health-rating">Enter your total steps for the day.</span>
+                </div>
+
+                <div class="health-card">
+                    <label for="water">Water Intake</label>
+                    <select id="water" onchange="updateHealthRating('water')">
+                        <option value="">Select water intake</option>
+                        <option value="1-2 lts">1-2 lts — Poor</option>
+                        <option value="2-3 ltr">2-3 ltr — Good</option>
+                        <option value="3-4 ltr">3-4 ltr — Very Good</option>
+                        <option value="4-5 ltr">4-5 ltr — Best</option>
+                    </select>
+                    <span class="health-rating" id="waterRating">Choose your daily water intake.</span>
+                </div>
+
+                <div class="health-card">
+                    <label for="sleep">Sleep Time</label>
+                    <select id="sleep" onchange="updateHealthRating('sleep')">
+                        <option value="">Select sleep duration</option>
+                        <option value="4-5 hour">4-5 hour — Poor</option>
+                        <option value="5-6 hour">5-6 hour — Fair</option>
+                        <option value="6-7 hour">6-7 hour — Good</option>
+                        <option value="7-8 hour">7-8 hour — Best</option>
+                    </select>
+                    <span class="health-rating" id="sleepRating">Choose your sleep duration.</span>
+                </div>
+            </div>
+        </div>
 
         <!-- WORKOUT -->
 
@@ -1390,6 +1474,45 @@ async function getDailyLog() {
 }
 
 
+function updateHealthRating(type) {
+    const select = document.getElementById(type);
+    const rating = document.getElementById(type + "Rating");
+    if (!select || !rating) return;
+
+    const selected = select.options[select.selectedIndex];
+    rating.className = "health-rating";
+    if (!selected || !selected.value) {
+        rating.textContent = type === "water"
+            ? "Choose your daily water intake."
+            : "Choose your sleep duration.";
+        return;
+    }
+
+    const label = selected.textContent.split("—")[1]?.trim() || "";
+    rating.textContent = label;
+
+    const ratingClass = {
+        "Poor": "poor",
+        "Fair": "fair",
+        "Good": "good",
+        "Very Good": "very-good",
+        "Best": "best"
+    }[label];
+
+    if (ratingClass) {
+        rating.classList.add(ratingClass);
+    }
+}
+
+function resetHealthFields() {
+    document.getElementById("steps").value = "";
+    document.getElementById("water").value = "";
+    document.getElementById("sleep").value = "";
+    updateHealthRating("water");
+    updateHealthRating("sleep");
+}
+
+
 /* =========================================================
    LOAD DAY
    ========================================================= */
@@ -1410,6 +1533,7 @@ async function loadDay() {
 
         document.getElementById("win").value = "";
         document.getElementById("improve").value = "";
+        resetHealthFields();
 
         return;
     }
@@ -1422,6 +1546,15 @@ async function loadDay() {
 
     document.getElementById("improve").value =
         dailyLog.improvement || "";
+
+    document.getElementById("steps").value =
+        dailyLog.steps_count ?? "";
+    document.getElementById("water").value =
+        dailyLog.water_intake || "";
+    document.getElementById("sleep").value =
+        dailyLog.sleep_hours || "";
+    updateHealthRating("water");
+    updateHealthRating("sleep");
 
 
     /* Load exercises */
@@ -1557,7 +1690,10 @@ async function saveDay() {
                     log_date: dateInput.value,
                     day: dayInput.value,
                     todays_win: document.getElementById("win").value,
-                    improvement: document.getElementById("improve").value
+                    improvement: document.getElementById("improve").value,
+                    steps_count: document.getElementById("steps").value === "" ? null : Number(document.getElementById("steps").value),
+                    water_intake: document.getElementById("water").value || null,
+                    sleep_hours: document.getElementById("sleep").value || null
                 },
                 {
                     onConflict: "user_id,log_date"
@@ -1741,7 +1877,7 @@ async function saveDay() {
 
         showMessage(
             "saveMessage",
-            "Today's workout, meals and reflection have been saved successfully.",
+            "Today's workout, health data, meals and reflection have been saved successfully.",
             "success"
         );
 
