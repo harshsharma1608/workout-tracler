@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workout Tracker</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    color: #172033;
+}
+
+.container {
+    width: min(1100px, 94%);
+    margin: 20px auto;
+}
+
+.header {
+    background: #3f7fe5;
+    color: white;
+    padding: 18px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.header h1 {
+    margin: 0 0 5px;
+    font-size: 24px;
+}
+
+.header p {
+    margin: 0;
+    opacity: 0.9;
+}
+
+.controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.control-box {
+    background: white;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #dfe3e8;
+}
+
+.control-box label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+input,
+textarea,
+button {
+    font-family: inherit;
+}
+
+input,
+textarea {
+    width: 100%;
+    border: 1px solid #cdd3da;
+    border-radius: 7px;
+    padding: 9px;
+    font-size: 14px;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 70px;
+}
+
+button {
+    border: 0;
+    border-radius: 8px;
+    padding: 11px 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.add-btn {
+    background: #3f7fe5;
+    color: white;
+    align-self: end;
+}
+
+.save-btn {
+    background: #198754;
+    color: white;
+    width: 100%;
+    margin-top: 15px;
+    font-size: 16px;
+}
+
+.section {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #dfe3e8;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.section-title {
+    background: #3f7fe5;
+    color: white;
+    padding: 11px 14px;
+    font-weight: bold;
+}
+
+.workout-table {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.workout-grid {
+    min-width: 850px;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1.5fr;
+}
+
+.cell {
+    padding: 9px;
+    border-right: 1px solid #dfe3e8;
+    border-bottom: 1px solid #dfe3e8;
+}
+
+.header-cell {
+    background: #eef3fb;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.cell input {
+    min-width: 0;
+}
+
+.remove-btn {
+    background: #f1f1f1;
+    color: #b42318;
+    padding: 5px 8px;
+    margin-top: 5px;
+    font-size: 11px;
+}
+
+.meal-table {
+    width: 100%;
+}
+
+.meal-grid {
+    display: grid;
+    grid-template-columns: 150px 1.5fr 1fr;
+}
+
+.meal-cell {
+    padding: 9px;
+    border-right: 1px solid #dfe3e8;
+    border-bottom: 1px solid #dfe3e8;
+}
+
+.meal-header {
+    background: #eef3fb;
+    font-weight: bold;
+}
+
+.reflection {
+    padding: 14px;
+}
+
+.reflection-box {
+    margin-bottom: 14px;
+}
+
+.reflection-box label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+@media (max-width: 700px) {
+
+    .container {
+        width: 96%;
+        margin: 10px auto;
+    }
+
+    .header h1 {
+        font-size: 20px;
+    }
+
+    .controls {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .add-btn {
+        grid-column: span 2;
+        width: 100%;
+    }
+
+    .meal-grid {
+        min-width: 650px;
+    }
+
+    .meal-table {
+        overflow-x: auto;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Workout Tracker</h1>
+        <p>Daily Workout, Meals & Reflection</p>
+    </div>
+
+    <div class="controls">
+
+        <div class="control-box">
+            <label for="date">Date</label>
+            <input type="date" id="date">
+        </div>
+
+        <div class="control-box">
+            <label for="day">Day</label>
+            <input type="text" id="day" readonly>
+        </div>
+
+        <button class="add-btn" onclick="addExercise()">
+            + Add Exercise
+        </button>
+
+    </div>
+
+
+    <!-- WORKOUT -->
+
+    <div class="section">
+
+        <div class="section-title">
+            Workout
+        </div>
+
+        <div class="workout-table">
+
+            <div class="workout-grid">
+
+                <div class="cell header-cell">
+                    Exercise
+                </div>
+
+                <div class="cell header-cell">
+                    Set 1<br>
+                    <small>(Weight × Reps)</small>
+                </div>
+
+                <div class="cell header-cell">
+                    Set 2<br>
+                    <small>(Weight × Reps)</small>
+                </div>
+
+                <div class="cell header-cell">
+                    Set 3<br>
+                    <small>(Weight × Reps)</small>
+                </div>
+
+                <div class="cell header-cell">
+                    Set 4<br>
+                    <small>(Weight × Reps)</small>
+                </div>
+
+                <div class="cell header-cell">
+                    Notes
+                </div>
+
+            </div>
+
+            <div id="exerciseRows"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MEALS -->
+
+    <div class="section">
+
+        <div class="section-title">
+            Meals
+        </div>
+
+        <div class="meal-table">
+
+            <div class="meal-grid">
+
+                <div class="meal-cell meal-header">
+                    Meal
+                </div>
+
+                <div class="meal-cell meal-header">
+                    What I Ate
+                </div>
+
+                <div class="meal-cell meal-header">
+                    Protein / Notes
+                </div>
+
+            </div>
+
+            <div id="mealRows">
+
+                <div class="meal-grid">
+                    <div class="meal-cell"><strong>Breakfast</strong></div>
+                    <div class="meal-cell">
+                        <input type="text" placeholder="What I ate">
+                    </div>
+                    <div class="meal-cell">
+                        <input type="text" placeholder="Protein / Notes">
+                    </div>
+                </div>
+
+                <div class="meal-grid">
+                    <div class="meal-cell"><strong>Lunch</strong></div>
+                    <div class="meal-cell">
+                        <input type="text" placeholder="What I ate">
+                    </div>
+                    <div class="meal-cell">
+                        <input type="text" placeholder="Protein / Notes">
+                    </div>
+                </div>
+
+                <div class="meal-grid">
+                    <div class="meal-cell"><strong>Dinner</strong></div>
+                    <div class="meal-cell">
+                        <input type="text" placeholder="What I ate">
+                    </div>
+                    <div class="meal-cell">
+                        <input type="text" placeholder="Protein / Notes">
+                    </div>
+                </div>
+
+                <div class="meal-grid">
+                    <div class="meal-cell"><strong>Snacks</strong></div>
+                    <div class="meal-cell">
+                        <input type="text" placeholder="What I ate">
+                    </div>
+                    <div class="meal-cell">
+                        <input type="text" placeholder="Protein / Notes">
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- REFLECTION -->
+
+    <div class="section">
+
+        <div class="section-title">
+            📝 Reflection & Progress
+        </div>
+
+        <div class="reflection">
+
+            <div class="reflection-box">
+
+                <label for="win">
+                    Today's Win
+                </label>
+
+                <textarea
+                    id="win"
+                    placeholder="What went well today?"
+                ></textarea>
+
+            </div>
+
+
+            <div class="reflection-box">
+
+                <label for="improve">
+                    What I Want To Improve
+                </label>
+
+                <textarea
+                    id="improve"
+                    placeholder="What should I improve?"
+                ></textarea>
+
+            </div>
+
+            <button class="save-btn" onclick="saveDay()">
+                Save Today's Data
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const dateInput = document.getElementById("date");
+const dayInput = document.getElementById("day");
+const exerciseRows = document.getElementById("exerciseRows");
+
+
+/* Today's date */
+
+const today = new Date();
+
+const yyyy = today.getFullYear();
+const mm = String(today.getMonth() + 1).padStart(2, "0");
+const dd = String(today.getDate()).padStart(2, "0");
+
+dateInput.value = `${yyyy}-${mm}-${dd}`;
+
+
+/* Show day */
+
+function updateDay() {
+
+    if (!dateInput.value) {
+        dayInput.value = "";
+        return;
+    }
+
+    const date = new Date(dateInput.value + "T00:00:00");
+
+    dayInput.value = date.toLocaleDateString("en-US", {
+        weekday: "long"
+    });
+}
+
+dateInput.addEventListener("change", updateDay);
+
+updateDay();
+
+
+/* Add Exercise */
+
+function addExercise() {
+
+    const row = document.createElement("div");
+
+    row.className = "workout-grid";
+
+    row.innerHTML = `
+
+        <div class="cell">
+            <input
+                type="text"
+                placeholder="Exercise name"
+            >
+        </div>
+
+        <div class="cell">
+            <input
+                type="text"
+                placeholder="kg × reps"
+            >
+        </div>
+
+        <div class="cell">
+            <input
+                type="text"
+                placeholder="kg × reps"
+            >
+        </div>
+
+        <div class="cell">
+            <input
+                type="text"
+                placeholder="kg × reps"
+            >
+        </div>
+
+        <div class="cell">
+            <input
+                type="text"
+                placeholder="kg × reps"
+            >
+        </div>
+
+        <div class="cell">
+            <input
+                type="text"
+                placeholder="Notes"
+            >
+
+            <button
+                class="remove-btn"
+                onclick="this.closest('.workout-grid').remove()"
+            >
+                Remove
+            </button>
+
+        </div>
+    `;
+
+    exerciseRows.appendChild(row);
+}
+
+
+/* Add initial rows */
+
+for (let i = 0; i < 6; i++) {
+    addExercise();
+}
+
+
+/* Temporary local save */
+
+function saveDay() {
+
+    const data = {
+
+        date: dateInput.value,
+
+        day: dayInput.value,
+
+        exercises:
+            [...exerciseRows.querySelectorAll(".workout-grid")]
+            .map(row =>
+                [...row.querySelectorAll("input")]
+                .map(input => input.value)
+            ),
+
+        win:
+            document.getElementById("win").value,
+
+        improve:
+            document.getElementById("improve").value
+
+    };
+
+    localStorage.setItem(
+        "workout-" + dateInput.value,
+        JSON.stringify(data)
+    );
+
+    alert("Today's workout has been saved.");
+
+}
+
+</script>
+
+</body>
+</html>
