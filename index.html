@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Workout Tracker</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 * {
     box-sizing: border-box;
@@ -38,6 +40,44 @@ body {
 .header p {
     margin: 0;
     opacity: 0.9;
+}
+
+.auth-box {
+    background: white;
+    border: 1px solid #dfe3e8;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 16px;
+}
+
+.auth-box h2 {
+    margin-top: 0;
+}
+
+.auth-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto auto;
+    gap: 10px;
+}
+
+.auth-status {
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+.logout-btn {
+    background: #dc3545;
+    color: white;
+}
+
+.login-btn {
+    background: #3f7fe5;
+    color: white;
+}
+
+.signup-btn {
+    background: #198754;
+    color: white;
 }
 
 .controls {
@@ -87,6 +127,11 @@ button {
     padding: 11px 16px;
     font-weight: bold;
     cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .add-btn {
@@ -155,9 +200,11 @@ button {
 
 .meal-table {
     width: 100%;
+    overflow-x: auto;
 }
 
 .meal-grid {
+    min-width: 650px;
     display: grid;
     grid-template-columns: 150px 1.5fr 1fr;
 }
@@ -187,6 +234,30 @@ button {
     margin-bottom: 6px;
 }
 
+.message {
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-top: 10px;
+    display: none;
+    font-size: 14px;
+}
+
+.message.success {
+    display: block;
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+.message.error {
+    display: block;
+    background: #f8d7da;
+    color: #842029;
+}
+
+.app-content {
+    display: none;
+}
+
 @media (max-width: 700px) {
 
     .container {
@@ -207,12 +278,8 @@ button {
         width: 100%;
     }
 
-    .meal-grid {
-        min-width: 650px;
-    }
-
-    .meal-table {
-        overflow-x: auto;
+    .auth-row {
+        grid-template-columns: 1fr;
     }
 }
 </style>
@@ -227,189 +294,249 @@ button {
         <p>Daily Workout, Meals & Reflection</p>
     </div>
 
-    <div class="controls">
+    <!-- LOGIN -->
 
-        <div class="control-box">
-            <label for="date">Date</label>
-            <input type="date" id="date">
-        </div>
+    <div class="auth-box" id="authBox">
 
-        <div class="control-box">
-            <label for="day">Day</label>
-            <input type="text" id="day" readonly>
-        </div>
+        <h2>Login to Your Tracker</h2>
 
-        <button class="add-btn" onclick="addExercise()">
-            + Add Exercise
-        </button>
+        <div class="auth-row">
 
-    </div>
+            <input
+                type="email"
+                id="email"
+                placeholder="Email"
+            >
 
+            <input
+                type="password"
+                id="password"
+                placeholder="Password"
+            >
 
-    <!-- WORKOUT -->
-
-    <div class="section">
-
-        <div class="section-title">
-            Workout
-        </div>
-
-        <div class="workout-table">
-
-            <div class="workout-grid">
-
-                <div class="cell header-cell">
-                    Exercise
-                </div>
-
-                <div class="cell header-cell">
-                    Set 1<br>
-                    <small>(Weight × Reps)</small>
-                </div>
-
-                <div class="cell header-cell">
-                    Set 2<br>
-                    <small>(Weight × Reps)</small>
-                </div>
-
-                <div class="cell header-cell">
-                    Set 3<br>
-                    <small>(Weight × Reps)</small>
-                </div>
-
-                <div class="cell header-cell">
-                    Set 4<br>
-                    <small>(Weight × Reps)</small>
-                </div>
-
-                <div class="cell header-cell">
-                    Notes
-                </div>
-
-            </div>
-
-            <div id="exerciseRows"></div>
-
-        </div>
-
-    </div>
-
-
-    <!-- MEALS -->
-
-    <div class="section">
-
-        <div class="section-title">
-            Meals
-        </div>
-
-        <div class="meal-table">
-
-            <div class="meal-grid">
-
-                <div class="meal-cell meal-header">
-                    Meal
-                </div>
-
-                <div class="meal-cell meal-header">
-                    What I Ate
-                </div>
-
-                <div class="meal-cell meal-header">
-                    Protein / Notes
-                </div>
-
-            </div>
-
-            <div id="mealRows">
-
-                <div class="meal-grid">
-                    <div class="meal-cell"><strong>Breakfast</strong></div>
-                    <div class="meal-cell">
-                        <input type="text" placeholder="What I ate">
-                    </div>
-                    <div class="meal-cell">
-                        <input type="text" placeholder="Protein / Notes">
-                    </div>
-                </div>
-
-                <div class="meal-grid">
-                    <div class="meal-cell"><strong>Lunch</strong></div>
-                    <div class="meal-cell">
-                        <input type="text" placeholder="What I ate">
-                    </div>
-                    <div class="meal-cell">
-                        <input type="text" placeholder="Protein / Notes">
-                    </div>
-                </div>
-
-                <div class="meal-grid">
-                    <div class="meal-cell"><strong>Dinner</strong></div>
-                    <div class="meal-cell">
-                        <input type="text" placeholder="What I ate">
-                    </div>
-                    <div class="meal-cell">
-                        <input type="text" placeholder="Protein / Notes">
-                    </div>
-                </div>
-
-                <div class="meal-grid">
-                    <div class="meal-cell"><strong>Snacks</strong></div>
-                    <div class="meal-cell">
-                        <input type="text" placeholder="What I ate">
-                    </div>
-                    <div class="meal-cell">
-                        <input type="text" placeholder="Protein / Notes">
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- REFLECTION -->
-
-    <div class="section">
-
-        <div class="section-title">
-            📝 Reflection & Progress
-        </div>
-
-        <div class="reflection">
-
-            <div class="reflection-box">
-
-                <label for="win">
-                    Today's Win
-                </label>
-
-                <textarea
-                    id="win"
-                    placeholder="What went well today?"
-                ></textarea>
-
-            </div>
-
-
-            <div class="reflection-box">
-
-                <label for="improve">
-                    What I Want To Improve
-                </label>
-
-                <textarea
-                    id="improve"
-                    placeholder="What should I improve?"
-                ></textarea>
-
-            </div>
-
-            <button class="save-btn" onclick="saveDay()">
-                Save Today's Data
+            <button class="login-btn" onclick="login()">
+                Login
             </button>
+
+            <button class="signup-btn" onclick="signUp()">
+                Create Account
+            </button>
+
+        </div>
+
+        <div id="authMessage" class="message"></div>
+
+    </div>
+
+
+    <!-- APP -->
+
+    <div class="app-content" id="appContent">
+
+        <div class="auth-box">
+
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+
+                <div>
+                    <strong id="loggedInEmail"></strong>
+                </div>
+
+                <button class="logout-btn" onclick="logout()">
+                    Logout
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="controls">
+
+            <div class="control-box">
+                <label for="date">Date</label>
+                <input type="date" id="date">
+            </div>
+
+            <div class="control-box">
+                <label for="day">Day</label>
+                <input type="text" id="day" readonly>
+            </div>
+
+            <button class="add-btn" onclick="addExercise()">
+                + Add Exercise
+            </button>
+
+        </div>
+
+
+        <!-- WORKOUT -->
+
+        <div class="section">
+
+            <div class="section-title">
+                Workout
+            </div>
+
+            <div class="workout-table">
+
+                <div class="workout-grid">
+
+                    <div class="cell header-cell">
+                        Exercise
+                    </div>
+
+                    <div class="cell header-cell">
+                        Set 1<br>
+                        <small>(Weight × Reps)</small>
+                    </div>
+
+                    <div class="cell header-cell">
+                        Set 2<br>
+                        <small>(Weight × Reps)</small>
+                    </div>
+
+                    <div class="cell header-cell">
+                        Set 3<br>
+                        <small>(Weight × Reps)</small>
+                    </div>
+
+                    <div class="cell header-cell">
+                        Set 4<br>
+                        <small>(Weight × Reps)</small>
+                    </div>
+
+                    <div class="cell header-cell">
+                        Notes
+                    </div>
+
+                </div>
+
+                <div id="exerciseRows"></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- MEALS -->
+
+        <div class="section">
+
+            <div class="section-title">
+                Meals
+            </div>
+
+            <div class="meal-table">
+
+                <div class="meal-grid">
+
+                    <div class="meal-cell meal-header">
+                        Meal
+                    </div>
+
+                    <div class="meal-cell meal-header">
+                        What I Ate
+                    </div>
+
+                    <div class="meal-cell meal-header">
+                        Protein / Notes
+                    </div>
+
+                </div>
+
+                <div id="mealRows">
+
+                    <div class="meal-grid" data-meal="Breakfast">
+                        <div class="meal-cell"><strong>Breakfast</strong></div>
+                        <div class="meal-cell">
+                            <input type="text" class="meal-food" placeholder="What I ate">
+                        </div>
+                        <div class="meal-cell">
+                            <input type="text" class="meal-protein" placeholder="Protein / Notes">
+                        </div>
+                    </div>
+
+                    <div class="meal-grid" data-meal="Lunch">
+                        <div class="meal-cell"><strong>Lunch</strong></div>
+                        <div class="meal-cell">
+                            <input type="text" class="meal-food" placeholder="What I ate">
+                        </div>
+                        <div class="meal-cell">
+                            <input type="text" class="meal-protein" placeholder="Protein / Notes">
+                        </div>
+                    </div>
+
+                    <div class="meal-grid" data-meal="Dinner">
+                        <div class="meal-cell"><strong>Dinner</strong></div>
+                        <div class="meal-cell">
+                            <input type="text" class="meal-food" placeholder="What I ate">
+                        </div>
+                        <div class="meal-cell">
+                            <input type="text" class="meal-protein" placeholder="Protein / Notes">
+                        </div>
+                    </div>
+
+                    <div class="meal-grid" data-meal="Snacks">
+                        <div class="meal-cell"><strong>Snacks</strong></div>
+                        <div class="meal-cell">
+                            <input type="text" class="meal-food" placeholder="What I ate">
+                        </div>
+                        <div class="meal-cell">
+                            <input type="text" class="meal-protein" placeholder="Protein / Notes">
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- REFLECTION -->
+
+        <div class="section">
+
+            <div class="section-title">
+                📝 Reflection & Progress
+            </div>
+
+            <div class="reflection">
+
+                <div class="reflection-box">
+
+                    <label for="win">
+                        Today's Win
+                    </label>
+
+                    <textarea
+                        id="win"
+                        placeholder="What went well today?"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="reflection-box">
+
+                    <label for="improve">
+                        What I Want To Improve
+                    </label>
+
+                    <textarea
+                        id="improve"
+                        placeholder="What should I improve?"
+                    ></textarea>
+
+                </div>
+
+                <button class="save-btn" onclick="saveDay()">
+                    Save Today's Data
+                </button>
+
+                <div id="saveMessage" class="message"></div>
+
+            </div>
 
         </div>
 
@@ -420,12 +547,34 @@ button {
 
 <script>
 
+/* =========================================================
+   SUPABASE CONFIGURATION
+   ========================================================= */
+
+const SUPABASE_URL = "sb_publishable_CxnP8tOKXjpAjMqGIczjjg_hOduuT7E";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNhbWp3Y3hlbmR1eXptenN4a3RmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0Mjc5NzMsImV4cCI6MjEwNzAwMzk3M30.iJo931LtKr2PMf-YowH5C2TuvLhJKRBuAIM2Qf8m6Yc";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
+
 const dateInput = document.getElementById("date");
 const dayInput = document.getElementById("day");
 const exerciseRows = document.getElementById("exerciseRows");
+const authBox = document.getElementById("authBox");
+const appContent = document.getElementById("appContent");
+const loggedInEmail = document.getElementById("loggedInEmail");
 
 
-/* Today's date */
+/* =========================================================
+   DEFAULT DATE
+   ========================================================= */
 
 const today = new Date();
 
@@ -436,7 +585,9 @@ const dd = String(today.getDate()).padStart(2, "0");
 dateInput.value = `${yyyy}-${mm}-${dd}`;
 
 
-/* Show day */
+/* =========================================================
+   SHOW DAY
+   ========================================================= */
 
 function updateDay() {
 
@@ -452,14 +603,38 @@ function updateDay() {
     });
 }
 
-dateInput.addEventListener("change", updateDay);
+dateInput.addEventListener("change", async function() {
+
+    updateDay();
+
+    if (currentUser) {
+        await loadDay();
+    }
+
+});
 
 updateDay();
 
 
-/* Add Exercise */
+/* =========================================================
+   MESSAGE
+   ========================================================= */
 
-function addExercise() {
+function showMessage(elementId, text, type) {
+
+    const element = document.getElementById(elementId);
+
+    element.textContent = text;
+    element.className = "message " + type;
+
+}
+
+
+/* =========================================================
+   ADD EXERCISE
+   ========================================================= */
+
+function addExercise(exercise = null) {
 
     const row = document.createElement("div");
 
@@ -470,42 +645,55 @@ function addExercise() {
         <div class="cell">
             <input
                 type="text"
+                class="exercise-name"
                 placeholder="Exercise name"
+                value="${exercise?.exercise_name || ""}"
             >
         </div>
 
         <div class="cell">
             <input
                 type="text"
+                class="set1"
                 placeholder="kg × reps"
+                value="${formatSet(exercise?.set1_weight, exercise?.set1_reps)}"
             >
         </div>
 
         <div class="cell">
             <input
                 type="text"
+                class="set2"
                 placeholder="kg × reps"
+                value="${formatSet(exercise?.set2_weight, exercise?.set2_reps)}"
             >
         </div>
 
         <div class="cell">
             <input
                 type="text"
+                class="set3"
                 placeholder="kg × reps"
+                value="${formatSet(exercise?.set3_weight, exercise?.set3_reps)}"
             >
         </div>
 
         <div class="cell">
             <input
                 type="text"
+                class="set4"
                 placeholder="kg × reps"
+                value="${formatSet(exercise?.set4_weight, exercise?.set4_reps)}"
             >
         </div>
 
         <div class="cell">
+
             <input
                 type="text"
+                class="exercise-notes"
                 placeholder="Notes"
+                value="${exercise?.notes || ""}"
             >
 
             <button
@@ -522,46 +710,700 @@ function addExercise() {
 }
 
 
-/* Add initial rows */
+/* =========================================================
+   FORMAT SET
+   ========================================================= */
 
-for (let i = 0; i < 6; i++) {
-    addExercise();
+function formatSet(weight, reps) {
+
+    if (weight === null || weight === undefined || reps === null || reps === undefined) {
+        return "";
+    }
+
+    if (weight === "" && reps === "") {
+        return "";
+    }
+
+    return `${weight} × ${reps}`;
 }
 
 
-/* Temporary local save */
+/* =========================================================
+   PARSE SET
+   ========================================================= */
 
-function saveDay() {
+function parseSet(value) {
 
-    const data = {
+    if (!value || !value.trim()) {
+        return {
+            weight: null,
+            reps: null
+        };
+    }
 
-        date: dateInput.value,
+    const cleaned = value
+        .replace(/kg/gi, "")
+        .replace(/×/g, "x")
+        .trim();
 
-        day: dayInput.value,
+    const parts = cleaned.split(/x/i);
 
-        exercises:
-            [...exerciseRows.querySelectorAll(".workout-grid")]
-            .map(row =>
-                [...row.querySelectorAll("input")]
-                .map(input => input.value)
-            ),
+    const weight = parseFloat(parts[0]);
+    const reps = parseInt(parts[1]);
 
-        win:
-            document.getElementById("win").value,
-
-        improve:
-            document.getElementById("improve").value
-
+    return {
+        weight: Number.isFinite(weight) ? weight : null,
+        reps: Number.isFinite(reps) ? reps : null
     };
+}
 
-    localStorage.setItem(
-        "workout-" + dateInput.value,
-        JSON.stringify(data)
-    );
 
-    alert("Today's workout has been saved.");
+/* =========================================================
+   INITIAL EXERCISE ROWS
+   ========================================================= */
+
+function createInitialExercises() {
+
+    exerciseRows.innerHTML = "";
+
+    for (let i = 0; i < 6; i++) {
+        addExercise();
+    }
 
 }
+
+createInitialExercises();
+
+
+/* =========================================================
+   AUTH STATE
+   ========================================================= */
+
+let currentUser = null;
+
+
+/* =========================================================
+   CHECK LOGIN
+   ========================================================= */
+
+async function checkUser() {
+
+    const {
+        data: {
+            session
+        }
+    } = await supabaseClient.auth.getSession();
+
+    if (session) {
+
+        currentUser = session.user;
+
+        showApp();
+
+    } else {
+
+        showLogin();
+
+    }
+
+}
+
+
+/* =========================================================
+   SHOW LOGIN
+   ========================================================= */
+
+function showLogin() {
+
+    authBox.style.display = "block";
+    appContent.style.display = "none";
+
+}
+
+
+/* =========================================================
+   SHOW APP
+   ========================================================= */
+
+async function showApp() {
+
+    authBox.style.display = "none";
+    appContent.style.display = "block";
+
+    loggedInEmail.textContent = currentUser.email;
+
+    await loadDay();
+
+}
+
+
+/* =========================================================
+   SIGN UP
+   ========================================================= */
+
+async function signUp() {
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+
+        showMessage(
+            "authMessage",
+            "Please enter email and password.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (password.length < 6) {
+
+        showMessage(
+            "authMessage",
+            "Password must be at least 6 characters.",
+            "error"
+        );
+
+        return;
+    }
+
+    const {
+        data,
+        error
+    } = await supabaseClient.auth.signUp({
+        email: email,
+        password: password
+    });
+
+    if (error) {
+
+        showMessage(
+            "authMessage",
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    if (data.session) {
+
+        currentUser = data.user;
+
+        showApp();
+
+    } else {
+
+        showMessage(
+            "authMessage",
+            "Account created. Please check your email if confirmation is required.",
+            "success"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+async function login() {
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+
+        showMessage(
+            "authMessage",
+            "Please enter email and password.",
+            "error"
+        );
+
+        return;
+    }
+
+    const {
+        data,
+        error
+    } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
+
+    if (error) {
+
+        showMessage(
+            "authMessage",
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    currentUser = data.user;
+
+    await showApp();
+
+}
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+async function logout() {
+
+    await supabaseClient.auth.signOut();
+
+    currentUser = null;
+
+    showLogin();
+
+}
+
+
+/* =========================================================
+   GET DAILY LOG
+   ========================================================= */
+
+async function getDailyLog() {
+
+    if (!currentUser || !dateInput.value) {
+        return null;
+    }
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("daily_logs")
+        .select("*")
+        .eq("user_id", currentUser.id)
+        .eq("log_date", dateInput.value)
+        .maybeSingle();
+
+    if (error) {
+
+        console.error(error);
+
+        return null;
+    }
+
+    return data;
+
+}
+
+
+/* =========================================================
+   LOAD DAY
+   ========================================================= */
+
+async function loadDay() {
+
+    if (!currentUser) {
+        return;
+    }
+
+    const dailyLog = await getDailyLog();
+
+    if (!dailyLog) {
+
+        createInitialExercises();
+
+        clearMeals();
+
+        document.getElementById("win").value = "";
+        document.getElementById("improve").value = "";
+
+        return;
+    }
+
+
+    /* Load reflection */
+
+    document.getElementById("win").value =
+        dailyLog.todays_win || "";
+
+    document.getElementById("improve").value =
+        dailyLog.improvement || "";
+
+
+    /* Load exercises */
+
+    const {
+        data: exercises,
+        error: exerciseError
+    } = await supabaseClient
+        .from("workout_exercises")
+        .select("*")
+        .eq("daily_log_id", dailyLog.id)
+        .order("exercise_order", {
+            ascending: true
+        });
+
+    if (exerciseError) {
+
+        console.error(exerciseError);
+
+    } else {
+
+        exerciseRows.innerHTML = "";
+
+        if (exercises.length === 0) {
+
+            createInitialExercises();
+
+        } else {
+
+            exercises.forEach(exercise => {
+                addExercise(exercise);
+            });
+
+        }
+
+    }
+
+
+    /* Load meals */
+
+    const {
+        data: meals,
+        error: mealError
+    } = await supabaseClient
+        .from("meals")
+        .select("*")
+        .eq("daily_log_id", dailyLog.id);
+
+    if (mealError) {
+
+        console.error(mealError);
+
+    } else {
+
+        clearMeals();
+
+        meals.forEach(meal => {
+
+            const row = document.querySelector(
+                `[data-meal="${meal.meal_name}"]`
+            );
+
+            if (row) {
+
+                row.querySelector(".meal-food").value =
+                    meal.what_i_ate || "";
+
+                row.querySelector(".meal-protein").value =
+                    meal.protein_notes || "";
+
+            }
+
+        });
+
+    }
+
+}
+
+
+/* =========================================================
+   CLEAR MEALS
+   ========================================================= */
+
+function clearMeals() {
+
+    document.querySelectorAll("#mealRows .meal-grid").forEach(row => {
+
+        row.querySelector(".meal-food").value = "";
+        row.querySelector(".meal-protein").value = "";
+
+    });
+
+}
+
+
+/* =========================================================
+   SAVE DAY
+   ========================================================= */
+
+async function saveDay() {
+
+    if (!currentUser) {
+
+        showMessage(
+            "saveMessage",
+            "Please login first.",
+            "error"
+        );
+
+        return;
+    }
+
+    const saveButton = document.querySelector(".save-btn");
+
+    saveButton.disabled = true;
+    saveButton.textContent = "Saving...";
+
+
+    try {
+
+        /* -----------------------------------------
+           1. SAVE DAILY LOG
+        ----------------------------------------- */
+
+        const {
+            data: dailyLog,
+            error: dailyError
+        } = await supabaseClient
+            .from("daily_logs")
+            .upsert(
+                {
+                    user_id: currentUser.id,
+                    log_date: dateInput.value,
+                    day: dayInput.value,
+                    todays_win: document.getElementById("win").value,
+                    improvement: document.getElementById("improve").value
+                },
+                {
+                    onConflict: "user_id,log_date"
+                }
+            )
+            .select()
+            .single();
+
+        if (dailyError) {
+            throw dailyError;
+        }
+
+
+        /* -----------------------------------------
+           2. DELETE OLD EXERCISES
+        ----------------------------------------- */
+
+        const {
+            error: deleteExerciseError
+        } = await supabaseClient
+            .from("workout_exercises")
+            .delete()
+            .eq("daily_log_id", dailyLog.id);
+
+        if (deleteExerciseError) {
+            throw deleteExerciseError;
+        }
+
+
+        /* -----------------------------------------
+           3. SAVE EXERCISES
+        ----------------------------------------- */
+
+        const exerciseData = [];
+
+        const rows =
+            [...exerciseRows.querySelectorAll(".workout-grid")];
+
+        rows.forEach((row, index) => {
+
+            const name =
+                row.querySelector(".exercise-name").value.trim();
+
+            const set1 =
+                parseSet(row.querySelector(".set1").value);
+
+            const set2 =
+                parseSet(row.querySelector(".set2").value);
+
+            const set3 =
+                parseSet(row.querySelector(".set3").value);
+
+            const set4 =
+                parseSet(row.querySelector(".set4").value);
+
+            const notes =
+                row.querySelector(".exercise-notes").value.trim();
+
+
+            if (
+                name ||
+                set1.weight !== null ||
+                set2.weight !== null ||
+                set3.weight !== null ||
+                set4.weight !== null ||
+                notes
+            ) {
+
+                exerciseData.push({
+
+                    daily_log_id: dailyLog.id,
+
+                    exercise_name: name || "Unnamed Exercise",
+
+                    set1_weight: set1.weight,
+                    set1_reps: set1.reps,
+
+                    set2_weight: set2.weight,
+                    set2_reps: set2.reps,
+
+                    set3_weight: set3.weight,
+                    set3_reps: set3.reps,
+
+                    set4_weight: set4.weight,
+                    set4_reps: set4.reps,
+
+                    notes: notes,
+
+                    exercise_order: index
+
+                });
+
+            }
+
+        });
+
+
+        if (exerciseData.length > 0) {
+
+            const {
+                error: exerciseInsertError
+            } = await supabaseClient
+                .from("workout_exercises")
+                .insert(exerciseData);
+
+            if (exerciseInsertError) {
+                throw exerciseInsertError;
+            }
+
+        }
+
+
+        /* -----------------------------------------
+           4. DELETE OLD MEALS
+        ----------------------------------------- */
+
+        const {
+            error: deleteMealError
+        } = await supabaseClient
+            .from("meals")
+            .delete()
+            .eq("daily_log_id", dailyLog.id);
+
+        if (deleteMealError) {
+            throw deleteMealError;
+        }
+
+
+        /* -----------------------------------------
+           5. SAVE MEALS
+        ----------------------------------------- */
+
+        const mealData = [];
+
+        document
+            .querySelectorAll("#mealRows .meal-grid")
+            .forEach(row => {
+
+                const mealName =
+                    row.dataset.meal;
+
+                const food =
+                    row.querySelector(".meal-food").value.trim();
+
+                const protein =
+                    row.querySelector(".meal-protein").value.trim();
+
+                mealData.push({
+
+                    daily_log_id: dailyLog.id,
+
+                    meal_name: mealName,
+
+                    what_i_ate: food,
+
+                    protein_notes: protein
+
+                });
+
+            });
+
+
+        if (mealData.length > 0) {
+
+            const {
+                error: mealInsertError
+            } = await supabaseClient
+                .from("meals")
+                .insert(mealData);
+
+            if (mealInsertError) {
+                throw mealInsertError;
+            }
+
+        }
+
+
+        /* -----------------------------------------
+           SUCCESS
+        ----------------------------------------- */
+
+        showMessage(
+            "saveMessage",
+            "Today's workout, meals and reflection have been saved successfully.",
+            "success"
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            "saveMessage",
+            "Could not save data: " + error.message,
+            "error"
+        );
+
+    } finally {
+
+        saveButton.disabled = false;
+        saveButton.textContent = "Save Today's Data";
+
+    }
+
+}
+
+
+/* =========================================================
+   AUTH LISTENER
+   ========================================================= */
+
+supabaseClient.auth.onAuthStateChange(
+    async (event, session) => {
+
+        if (session) {
+
+            currentUser = session.user;
+
+            await showApp();
+
+        } else {
+
+            currentUser = null;
+
+            showLogin();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   START APP
+   ========================================================= */
+
+checkUser();
 
 </script>
 
