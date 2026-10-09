@@ -346,6 +346,29 @@ button:disabled {
 .nutrition-summary strong {
     margin-right: 16px;
 }
+
+.set-input-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+}
+.set-input-wrap input {
+    width: 54px;
+    min-width: 0;
+    text-align: center;
+    padding: 7px 4px;
+}
+.set-bracket,
+.multiply-sign {
+    font-weight: 700;
+    color: #667085;
+    user-select: none;
+}
+.set-bracket { font-size: 18px; }
+.multiply-sign { font-size: 15px; }
+
 @media (max-width: 700px) {
     .exercise-name,
     .meal-food,
@@ -455,23 +478,77 @@ button:disabled {
         font-size: 15px;
     }
 
-    .workout-table,
+
+    /* Exercise table becomes a real card layout on phones instead of forcing a wide table. */
+    .workout-table {
+        overflow: visible;
+    }
+
+    .workout-table > .workout-grid {
+        display: none;
+    }
+
+    #exerciseRows {
+        display: grid;
+        gap: 10px;
+    }
+
+    #exerciseRows .workout-grid {
+        min-width: 0;
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        border: 1px solid #dfe3e8;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    #exerciseRows .cell {
+        min-width: 0;
+        border-right: 1px solid #dfe3e8;
+        border-bottom: 1px solid #dfe3e8;
+    }
+
+    #exerciseRows .exercise-cell,
+    #exerciseRows .notes-cell {
+        grid-column: 1 / -1;
+    }
+
+    #exerciseRows .cell::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        color: #667085;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: .02em;
+    }
+
+    #exerciseRows .set-input-wrap {
+        justify-content: flex-start;
+    }
+
+    #exerciseRows .set-input-wrap input {
+        flex: 1;
+        width: auto;
+        min-width: 0;
+        max-width: none;
+    }
+
     .meal-table {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
 
-    .workout-grid {
-        min-width: 760px;
-        grid-template-columns: 1.4fr 0.9fr 0.9fr 0.9fr 0.9fr 1.3fr;
-    }
-
-    .cell,
+    #exerciseRows .cell,
     .meal-cell {
         padding: 7px;
     }
 
-    .cell input,
+    #exerciseRows .cell input,
     .meal-cell input {
         min-height: 42px;
         font-size: 15px;
@@ -916,22 +993,22 @@ button:disabled {
 
                     <div class="cell header-cell">
                         Set 1<br>
-                        <small>(Weight × Reps)</small>
+                        <small>( kg × reps )</small>
                     </div>
 
                     <div class="cell header-cell">
                         Set 2<br>
-                        <small>(Weight × Reps)</small>
+                        <small>( kg × reps )</small>
                     </div>
 
                     <div class="cell header-cell">
                         Set 3<br>
-                        <small>(Weight × Reps)</small>
+                        <small>( kg × reps )</small>
                     </div>
 
                     <div class="cell header-cell">
                         Set 4<br>
-                        <small>(Weight × Reps)</small>
+                        <small>( kg × reps )</small>
                     </div>
 
                     <div class="cell header-cell">
@@ -1915,13 +1992,13 @@ function updateMealMacros(row) {
 }
 
 /* GLOBAL APP STATE - declared before any startup functions run */
-let currentUser = null;
-let userProfile = null;
-let sleepChartInstance = null;
-let calorieChartInstance = null;
-let macroChartInstance = null;
+var currentUser = null;
+var userProfile = null;
+var sleepChartInstance = null;
+var calorieChartInstance = null;
+var macroChartInstance = null;
 
-const ACTIVITY_FACTORS = {
+var ACTIVITY_FACTORS = {
     sedentary: 1.20, light: 1.375, moderate: 1.55, very: 1.725, extreme: 1.90
 };
 
@@ -2163,67 +2240,33 @@ function showMessage(elementId, text, type) {
 function addExercise(exercise = null) {
 
     const row = document.createElement("div");
-
     row.className = "workout-grid";
 
-    row.innerHTML = `
+    const setValue = (setNo, type) => {
+        if (!exercise) return "";
+        const value = exercise[`set${setNo}_${type}`];
+        return value === null || value === undefined ? "" : value;
+    };
 
-        <div class="cell">
+    row.innerHTML = `
+        <div class="cell exercise-cell" data-label="Exercise">
             <select class="exercise-name" aria-label="Exercise name"></select>
         </div>
 
-        <div class="cell">
-            <input
-                type="text"
-                class="set1"
-                placeholder="kg × reps"
-                value="${formatSet(exercise?.set1_weight, exercise?.set1_reps)}"
-            >
-        </div>
+        ${[1,2,3,4].map(n => `
+        <div class="cell set-cell" data-label="Set ${n}">
+            <div class="set-input-wrap" aria-label="Set ${n}: weight and reps">
+                <span class="set-bracket">(</span>
+                <input type="number" class="set${n}-weight" inputmode="decimal" min="0" step="0.1" placeholder="kg" value="${setValue(n,'weight')}">
+                <span class="multiply-sign">×</span>
+                <input type="number" class="set${n}-reps" inputmode="numeric" min="0" step="1" placeholder="reps" value="${setValue(n,'reps')}">
+                <span class="set-bracket">)</span>
+            </div>
+        </div>`).join("")}
 
-        <div class="cell">
-            <input
-                type="text"
-                class="set2"
-                placeholder="kg × reps"
-                value="${formatSet(exercise?.set2_weight, exercise?.set2_reps)}"
-            >
-        </div>
-
-        <div class="cell">
-            <input
-                type="text"
-                class="set3"
-                placeholder="kg × reps"
-                value="${formatSet(exercise?.set3_weight, exercise?.set3_reps)}"
-            >
-        </div>
-
-        <div class="cell">
-            <input
-                type="text"
-                class="set4"
-                placeholder="kg × reps"
-                value="${formatSet(exercise?.set4_weight, exercise?.set4_reps)}"
-            >
-        </div>
-
-        <div class="cell">
-
-            <input
-                type="text"
-                class="exercise-notes"
-                placeholder="Notes"
-                value="${exercise?.notes || ""}"
-            >
-
-            <button
-                class="remove-btn"
-                onclick="this.closest('.workout-grid').remove()"
-            >
-                Remove
-            </button>
-
+        <div class="cell notes-cell" data-label="Notes">
+            <input type="text" class="exercise-notes" placeholder="Notes" value="${escapeHtml(exercise?.notes || "")}">
+            <button class="remove-btn" onclick="this.closest('.workout-grid').remove()">Remove</button>
         </div>
     `;
 
@@ -2261,28 +2304,31 @@ function formatSet(weight, reps) {
    ========================================================= */
 
 function parseSet(value) {
-
-    if (!value || !value.trim()) {
-        return {
-            weight: null,
-            reps: null
-        };
-    }
-
-    const cleaned = value
-        .replace(/kg/gi, "")
-        .replace(/×/g, "x")
-        .trim();
-
+    if (!value || !String(value).trim()) return { weight: null, reps: null };
+    const cleaned = String(value).replace(/kg/gi, "").replace(/×/g, "x").replace(/[()]/g, "").trim();
     const parts = cleaned.split(/x/i);
-
     const weight = parseFloat(parts[0]);
-    const reps = parseInt(parts[1]);
-
+    const reps = parseInt(parts[1], 10);
     return {
         weight: Number.isFinite(weight) ? weight : null,
         reps: Number.isFinite(reps) ? reps : null
     };
+}
+
+function readSet(row, setNo) {
+    const weightEl = row.querySelector(`.set${setNo}-weight`);
+    const repsEl = row.querySelector(`.set${setNo}-reps`);
+    if (weightEl && repsEl) {
+        const weight = weightEl.value === "" ? null : Number(weightEl.value);
+        const reps = repsEl.value === "" ? null : Number(repsEl.value);
+        return {
+            weight: Number.isFinite(weight) ? weight : null,
+            reps: Number.isFinite(reps) ? reps : null
+        };
+    }
+    // Backward compatibility with any older row still using a single text field.
+    const legacy = row.querySelector(`.set${setNo}`);
+    return legacy ? parseSet(legacy.value) : { weight: null, reps: null };
 }
 
 
@@ -2988,16 +3034,16 @@ async function saveDay() {
                 row.querySelector(".exercise-name").value.trim();
 
             const set1 =
-                parseSet(row.querySelector(".set1").value);
+                readSet(row, 1);
 
             const set2 =
-                parseSet(row.querySelector(".set2").value);
+                readSet(row, 2);
 
             const set3 =
-                parseSet(row.querySelector(".set3").value);
+                readSet(row, 3);
 
             const set4 =
-                parseSet(row.querySelector(".set4").value);
+                readSet(row, 4);
 
             const notes =
                 row.querySelector(".exercise-notes").value.trim();
