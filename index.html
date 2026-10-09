@@ -750,6 +750,60 @@ button:disabled {
 .chart-card h3 { margin:0 0 8px; font-size:15px; }
 .chart-wrap { position:relative; height:260px; }
 .profile-note { font-size:12px; color:#667085; margin-top:8px; }
+.profile-btn {
+    border: 1px solid #cdd3da;
+    background: #eef3fb;
+    color: #172033;
+    border-radius: 7px;
+    padding: 9px 13px;
+    cursor: pointer;
+    font-weight: 700;
+}
+.profile-section-head {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:14px;
+}
+.profile-details-grid {
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+}
+.profile-detail-card {
+    padding:12px;
+    border:1px solid #e5e7eb;
+    border-radius:9px;
+    background:#f8fafc;
+}
+.profile-detail-label {
+    display:block;
+    color:#667085;
+    font-size:12px;
+    margin-bottom:4px;
+}
+.profile-detail-value {
+    display:block;
+    color:#172033;
+    font-weight:700;
+    word-break:break-word;
+}
+.profile-modal-actions {
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:14px;
+}
+.profile-cancel-btn {
+    border:1px solid #cdd3da;
+    background:#fff;
+    color:#172033;
+    border-radius:7px;
+    padding:10px 14px;
+    cursor:pointer;
+    font-weight:700;
+}
 .modal-backdrop {
     position:fixed; inset:0; background:rgba(15,23,42,.55); z-index:9999;
     display:none; align-items:center; justify-content:center; padding:16px;
@@ -764,8 +818,12 @@ button:disabled {
 .food-actions { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
 .add-food-btn.secondary { background:#eef3fb; color:#172033; border:1px solid #cdd3da; }
 @media(max-width:700px) {
-  .profile-grid, .chart-grid, .target-grid { grid-template-columns:1fr; }
+  .profile-grid, .chart-grid, .target-grid, .profile-details-grid { grid-template-columns:1fr; }
   .custom-food-grid { grid-template-columns:1fr 1fr; }
+  .profile-section-head { align-items:flex-start; flex-direction:column; }
+  .profile-section-head .profile-btn { width:100%; }
+  .profile-modal-actions { flex-direction:column; }
+  .profile-modal-actions button { width:100%; }
 }
 </style>
 </head>
@@ -826,9 +884,14 @@ button:disabled {
                     <strong id="loggedInEmail"></strong>
                 </div>
 
-                <button class="logout-btn" onclick="logout()">
-                    Logout
-                </button>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="profile-btn" type="button" onclick="openProfileModal(true)">
+                        My Profile
+                    </button>
+                    <button class="logout-btn" onclick="logout()">
+                        Logout
+                    </button>
+                </div>
 
             </div>
 
@@ -887,6 +950,18 @@ button:disabled {
             <div class="profile-note">These are estimated starting targets. Review your real progress over 2–3 weeks before changing calories.</div>
         </div>
 
+        <!-- MY PROFILE -->
+        <div id="myProfileSection" class="profile-panel" style="display:none;">
+            <div class="profile-section-head">
+                <div>
+                    <div class="section-title" style="margin:0 0 4px;">My Profile</div>
+                    <div class="profile-note" style="margin:0;">Update your body details, activity level or goal whenever your plan changes.</div>
+                </div>
+                <button type="button" class="profile-btn" onclick="openProfileModal(true)">Edit Profile</button>
+            </div>
+            <div id="profileDetails" class="profile-details-grid"></div>
+        </div>
+
         <!-- PROGRESS CHARTS -->
         <div id="progressCharts" class="section" style="display:none;">
             <div class="section-title">Progress Charts</div>
@@ -908,7 +983,7 @@ button:disabled {
 
         <div id="profileModal" class="modal-backdrop">
             <div class="profile-modal">
-                <h2>Set Up Your Fitness Profile</h2>
+                <h2 id="profileModalTitle">Set Up Your Fitness Profile</h2>
                 <p>Enter your details once. The tracker will calculate BMR, estimated maintenance calories, goal calories and daily macros.</p>
                 <div class="profile-grid">
                     <div><label>Age</label><input id="profileAge" type="number" min="13" max="100"></div>
@@ -928,7 +1003,10 @@ button:disabled {
                     <div><label>Average Daily Steps</label><input id="profileAvgSteps" type="number" min="0" max="100000" step="100"></div>
                 </div>
                 <div id="profileCalcPreview" class="target-card" style="margin-top:14px;">Complete the required fields to see your targets.</div>
-                <button type="button" class="save-btn" onclick="saveProfile()">Save Profile & Calculate Targets</button>
+                <div class="profile-modal-actions">
+                    <button type="button" class="save-btn" onclick="saveProfile()">Save Profile & Calculate Targets</button>
+                    <button type="button" class="profile-cancel-btn" onclick="closeProfileModal()">Cancel</button>
+                </div>
                 <div id="profileMessage" class="message"></div>
             </div>
         </div>
@@ -2406,7 +2484,12 @@ function fillProfileForm(p) {
 }
 
 function openProfileModal(edit=false) {
+    if (!userProfile && edit) return;
     fillProfileForm(userProfile);
+    document.getElementById("profileModalTitle").textContent = edit
+        ? "Edit Your Fitness Profile"
+        : "Set Up Your Fitness Profile";
+    document.getElementById("profileMessage").textContent = "";
     document.getElementById("profileModal").classList.add("active");
 }
 function closeProfileModal(){ document.getElementById("profileModal").classList.remove("active"); }
@@ -2466,11 +2549,48 @@ async function saveProfile() {
         userProfile = data;
         closeProfileModal();
         renderTargetSummary();
+        renderProfileDetails();
         await loadProgressCharts();
     } catch (err) {
         console.error("Unexpected profile save error:", err);
         showMessage("profileMessage", "Something went wrong while saving. Please check the browser console.", "error");
     }
+}
+
+function renderProfileDetails() {
+    const p = userProfile;
+    const box = document.getElementById("profileDetails");
+    const section = document.getElementById("myProfileSection");
+    if (!p || !box || !section) return;
+
+    const activityLabels = {
+        sedentary: "Sedentary",
+        light: "Lightly Active",
+        moderate: "Moderately Active",
+        very: "Very Active",
+        extreme: "Extremely Active"
+    };
+
+    const details = [
+        ["Age", p.age ? `${p.age} years` : "Not set"],
+        ["Gender", p.gender ? p.gender.charAt(0).toUpperCase() + p.gender.slice(1) : "Not set"],
+        ["Height", p.height_cm ? `${p.height_cm} cm` : "Not set"],
+        ["Current Weight", p.weight_kg ? `${p.weight_kg} kg` : "Not set"],
+        ["Activity Level", activityLabels[p.activity_level] || "Not set"],
+        ["Goal", goalLabel(p.goal)],
+        ["Target Weight", p.target_weight ? `${p.target_weight} kg` : "Not set"],
+        ["Workout Days", p.workout_days != null ? `${p.workout_days} days/week` : "Not set"],
+        ["Average Steps", p.avg_steps != null ? Number(p.avg_steps).toLocaleString() : "Not set"]
+    ];
+
+    box.innerHTML = details.map(([label,value]) => `
+        <div class="profile-detail-card">
+            <span class="profile-detail-label">${escapeHtml(label)}</span>
+            <span class="profile-detail-value">${escapeHtml(String(value))}</span>
+        </div>
+    `).join("");
+
+    section.style.display = "block";
 }
 
 function renderTargetSummary() {
@@ -2585,8 +2705,9 @@ async function showApp() {
     await loadUserProfile();
     if (userProfile) {
         renderTargetSummary();
+        renderProfileDetails();
     } else {
-        openProfileModal();
+        openProfileModal(false);
     }
     await loadDay();
     await loadProgressCharts();
