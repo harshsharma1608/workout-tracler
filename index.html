@@ -825,6 +825,122 @@ button:disabled {
   .profile-modal-actions { flex-direction:column; }
   .profile-modal-actions button { width:100%; }
 }
+
+/* REDESIGNED FITNESS APP SHELL */
+:root { --app-bg:#f4f7fb; --ink:#172033; --muted:#667085; --brand:#315fe8; --brand-dark:#2448b8; --line:#e4e9f2; --surface:#ffffff; --soft:#f0f4ff; }
+body { background:var(--app-bg); color:var(--ink); padding-bottom:100px; }
+.container { width:min(1080px,100%); margin:0 auto; padding:16px 18px 28px; }
+.header { background:linear-gradient(135deg,#18358b,#315fe8 68%,#6388ff); border-radius:20px; padding:22px 24px; margin-bottom:14px; box-shadow:0 12px 30px rgba(49,95,232,.18); }
+.header h1 { font-size:25px; letter-spacing:-.4px; }
+.header p { margin-top:6px; font-size:14px; color:#e5ebff; }
+.auth-box { border:1px solid var(--line); border-radius:16px; box-shadow:0 4px 18px rgba(16,24,40,.04); }
+#appContent > .auth-box { margin-bottom:14px; }
+#appContent > .auth-box .profile-btn { background:#edf2ff; border-color:#dce5ff; color:#2448b8; }
+.logout-btn { border-radius:10px; }
+.tab-view { display:none; animation:tabIn .18s ease-out; }
+.tab-view.active { display:block; }
+@keyframes tabIn { from {opacity:.65;transform:translateY(4px)} to {opacity:1;transform:translateY(0)} }
+.section, .profile-panel, .target-card { border-radius:16px; border-color:var(--line); box-shadow:0 4px 18px rgba(16,24,40,.035); }
+.section { margin-bottom:14px; }
+.section-title { background:transparent; color:var(--ink); padding:18px 18px 12px; font-size:17px; letter-spacing:-.2px; }
+.section-title:before { content:""; display:inline-block; width:4px; height:17px; border-radius:4px; background:var(--brand); margin-right:9px; vertical-align:-3px; }
+.profile-panel { padding:18px; margin-bottom:14px; }
+#profileDashboard .section-title { margin:-18px -18px 14px !important; padding:18px 18px 12px; }
+#profileDashboard .section-title:before { display:none; }
+.controls { grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+.control-box { border-radius:12px; border-color:var(--line); padding:12px; }
+.date-nav { grid-column:1/-1; }
+.nav-btn { background:#eef2ff; color:#2448b8; border-color:#dce5ff; }
+button { border-radius:10px; transition:transform .12s ease,filter .12s ease; }
+button:active { transform:scale(.98); }
+input, textarea, select { border-color:#d6deea; }
+input:focus, textarea:focus, select:focus { outline:2px solid rgba(49,95,232,.16); border-color:#7794ff; }
+.health-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.health-card { border-radius:13px; border-color:var(--line); background:#fbfcff; }
+.health-card label { font-size:13px; }
+.health-rating { line-height:1.4; }
+.target-main { color:var(--brand); font-size:32px; }
+.target-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.target-item { border-color:var(--line); background:#fbfcff; }
+.target-item strong { font-size:17px; }
+.chart-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.chart-card { border-radius:13px; border-color:var(--line); }
+.chart-card:first-child { grid-column:1/-1; }
+.workout-actions { display:flex; gap:8px; flex-wrap:wrap; padding:0 16px 14px; }
+.workout-actions button { flex:1; min-width:130px; }
+.add-btn { background:var(--brand); }
+.session-timer { margin:0 14px 14px; border:1px solid #dce5ff; background:linear-gradient(135deg,#f3f6ff,#fff); border-radius:14px; padding:14px; }
+.session-timer-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+.session-timer h3 { margin:0; font-size:15px; }
+.timer-clock { font-size:26px; font-weight:800; letter-spacing:1px; color:var(--brand-dark); font-variant-numeric:tabular-nums; }
+.timer-controls { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px; }
+.timer-controls select { min-height:42px; border:1px solid #d6deea; border-radius:8px; padding:8px; background:#fff; }
+.timer-start { background:var(--brand); color:#fff; }
+.timer-finish { background:#172033; color:#fff; }
+.timer-result { color:#475467; font-size:13px; margin-top:8px; line-height:1.5; }
+.dashboard-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-bottom:14px; }
+.stat-card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px; min-width:0; box-shadow:0 4px 18px rgba(16,24,40,.035); }
+.stat-label { color:var(--muted); font-size:12px; font-weight:700; margin-bottom:7px; }
+.stat-value { font-size:23px; line-height:1.2; font-weight:800; letter-spacing:-.5px; overflow-wrap:anywhere; }
+.stat-sub { font-size:11px; color:var(--muted); margin-top:5px; }
+.stat-progress { height:5px; border-radius:10px; background:#edf0f6; overflow:hidden; margin-top:10px; }
+.stat-progress span { display:block; height:100%; width:0; background:var(--brand); border-radius:10px; transition:width .2s; }
+#quickWorkoutSummary { margin:0 0 14px; padding:14px 16px; border-radius:14px; border:1px solid var(--line); background:#fff; display:flex; justify-content:space-between; gap:12px; align-items:center; }
+#quickWorkoutSummary strong { font-size:14px; }
+#quickWorkoutSummary span { color:var(--muted); font-size:12px; text-align:right; }
+.nutrition-summary { border-radius:12px; border-color:var(--line); }
+.meal-grid { background:#fff; }
+.meal-cell { border-color:var(--line); }
+.history-actions { margin:0 0 12px; }
+.history-btn { border-radius:10px; }
+.history-card { border-radius:13px; border-color:var(--line); }
+.reflection { padding:16px; }
+.save-btn { background:var(--brand); border-radius:11px; }
+#progressCharts { margin-bottom:14px; }
+.bottom-nav { position:fixed; z-index:1000; left:50%; bottom:12px; transform:translateX(-50%); width:min(540px,calc(100% - 24px)); display:grid; grid-template-columns:repeat(4,1fr); gap:4px; padding:7px; background:rgba(255,255,255,.96); border:1px solid rgba(218,225,237,.95); border-radius:18px; box-shadow:0 12px 38px rgba(20,32,62,.18); backdrop-filter:blur(16px); }
+.bottom-nav button { min-width:0; background:transparent; color:#778198; padding:8px 4px 7px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:11px; font-weight:700; border-radius:12px; }
+.bottom-nav button .nav-icon { font-size:19px; line-height:1; }
+.bottom-nav button.active { color:var(--brand-dark); background:#edf2ff; }
+.bottom-nav button.active .nav-label { color:var(--brand-dark); }
+@media(max-width:700px) {
+ body { padding-bottom:94px; }
+ .meal-table { overflow:visible; }
+ .meal-table > .meal-grid { display:none; }
+ #mealRows .meal-grid { min-width:0; width:100%; display:grid; grid-template-columns:1fr; border:1px solid var(--line); border-radius:12px; overflow:hidden; margin-bottom:10px; }
+ #mealRows .meal-cell { padding:10px; border-right:0; }
+ #mealRows .meal-grid .meal-cell:first-child { background:#f2f5ff; }
+ #mealRows .meal-grid .meal-cell:nth-child(2)::before { content:"FOODS"; display:block; font-size:11px; color:var(--muted); font-weight:800; margin-bottom:8px; letter-spacing:.04em; }
+ #mealRows .meal-grid .meal-cell:nth-child(3)::before { content:"MEAL SUMMARY"; display:block; font-size:11px; color:var(--muted); font-weight:800; margin-bottom:8px; letter-spacing:.04em; }
+ #mealRows .meal-food-item { grid-template-columns:minmax(0,1fr) 62px 34px; }
+ #mealRows .meal-food-item .meal-food { min-width:0; }
+
+ .container { padding:10px 10px 22px; }
+ .header { padding:18px; border-radius:16px; margin-bottom:10px; }
+ .header h1 { font-size:22px; }
+ .controls { grid-template-columns:1fr 1fr; }
+ .date-nav { grid-column:1/-1; }
+ .dashboard-stats { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+ .stat-card { padding:12px; }
+ .stat-value { font-size:21px; }
+ .health-grid { grid-template-columns:repeat(2,minmax(0,1fr)); padding:10px; gap:8px; }
+ .health-card { padding:11px; }
+ .health-card input, .health-card select { font-size:16px; }
+ .target-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .chart-grid { grid-template-columns:1fr; padding:10px; }
+ .chart-card:first-child { grid-column:auto; }
+ .chart-wrap { height:230px; }
+ .section-title { padding:15px 13px 10px; }
+ .workout-actions { padding:0 10px 10px; }
+ .session-timer { margin:0 10px 10px; }
+ #quickWorkoutSummary { padding:12px; }
+ .bottom-nav { bottom:8px; }
+}
+@media(min-width:701px) {
+ .controls { grid-template-columns:1fr 1fr 1.2fr; }
+ .date-nav { grid-column:auto; }
+ .bottom-nav { bottom:14px; }
+}
+
 </style>
 </head>
 
@@ -2073,6 +2189,7 @@ function updateMealMacros(row) {
 var currentUser = null;
 var userProfile = null;
 var sleepChartInstance = null;
+var weightChartInstance = null;
 var calorieChartInstance = null;
 var macroChartInstance = null;
 
@@ -2099,6 +2216,7 @@ function updateNutritionTotals() {
     document.getElementById("totalCarbs").textContent=`Carbs: ${carbs.toFixed(1)} g`;
     document.getElementById("totalFat").textContent=`Fat: ${fat.toFixed(1)} g`;
     if (typeof renderNutritionCharts === "function") renderNutritionCharts();
+    if (typeof updateQuickStats === "function") updateQuickStats();
 }
 
 /* =========================================================
@@ -2590,7 +2708,7 @@ function renderProfileDetails() {
         </div>
     `).join("");
 
-    section.style.display = "block";
+    section.style.display = "none";
 }
 
 function renderTargetSummary() {
@@ -2607,6 +2725,7 @@ function renderTargetSummary() {
       <div class="profile-note">BMR: ${Math.round(p.bmr)} kcal/day. Estimated starting target; adjust from real progress, not single-day changes.</div>`;
     document.getElementById("profileDashboard").style.display="block";
     document.getElementById("progressCharts").style.display="block";
+    if (typeof updateQuickStats === "function") updateQuickStats();
 }
 function goalLabel(g){ return g==="muscle"?"Build Muscle":g==="fat_loss"?"Lose Fat":"Build Muscle + Lose Fat"; }
 
@@ -2622,6 +2741,12 @@ async function loadProgressCharts() {
     const sleep=ordered.map(x=>sleepToHours(x.sleep_hours));
     const ctx=document.getElementById("sleepChart");
     if(ctx){ if(sleepChartInstance) sleepChartInstance.destroy(); sleepChartInstance=new Chart(ctx,{type:"line",data:{labels,datasets:[{label:"Sleep hours",data:sleep,borderWidth:2,spanGaps:true,tension:.25}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{min:0,max:10,title:{display:true,text:"Hours"}}}}}); }
+    const weightCanvas=document.getElementById("weightChart");
+    if(weightCanvas){
+      if(weightChartInstance) weightChartInstance.destroy();
+      const weights=ordered.map(x=>x.weight_kg==null?null:Number(x.weight_kg));
+      weightChartInstance=new Chart(weightCanvas,{type:"line",data:{labels,datasets:[{label:"Weight (kg)",data:weights,borderWidth:2,spanGaps:true,tension:.25}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{title:{display:true,text:"kg"}}}}});
+    }
     renderNutritionCharts();
 }
 function currentNutrition() {
@@ -2938,6 +3063,7 @@ async function loadDay() {
         document.getElementById("win").value = "";
         document.getElementById("improve").value = "";
         resetHealthFields();
+        if (typeof updateQuickStats === "function") updateQuickStats();
 
         return;
     }
@@ -3045,6 +3171,7 @@ async function loadDay() {
         updateNutritionTotals();
     }
 
+    if (typeof updateQuickStats === "function") updateQuickStats();
 
 }
 
@@ -3348,10 +3475,173 @@ supabaseClient.auth.onAuthStateChange(
 );
 
 
+
+/* REDESIGNED TAB LAYOUT: moves existing data-entry panels without replacing their IDs or save logic. */
+function buildRedesignedLayout() {
+    const app = document.getElementById('appContent');
+    if (!app || document.getElementById('bottomNav')) return;
+
+    const controls = app.querySelector('.controls');
+    const profileDashboard = document.getElementById('profileDashboard');
+    const charts = document.getElementById('progressCharts');
+    const historyActions = app.querySelector('.history-actions');
+    const historyPanel = document.getElementById('historyPanel');
+    const health = [...app.querySelectorAll(':scope > .section')].find(el => el.querySelector('.section-title')?.textContent.trim() === 'Daily Health');
+    const workout = [...app.querySelectorAll(':scope > .section')].find(el => el.querySelector('.section-title')?.textContent.trim() === 'Workout');
+    const meals = [...app.querySelectorAll(':scope > .section')].find(el => el.querySelector('.section-title')?.textContent.trim() === 'Meals');
+    const reflection = [...app.querySelectorAll(':scope > .section')].find(el => el.querySelector('.section-title')?.textContent.includes('Reflection & Progress'));
+    const exerciseActions = controls?.lastElementChild;
+
+    const views = {};
+    [['dashboard','Dashboard'],['workout','Workout'],['diet','Diet'],['progress','Progress']].forEach(([id,label]) => {
+        const view = document.createElement('div');
+        view.className = 'tab-view'; view.id = `view-${id}`; view.dataset.view = id;
+        app.appendChild(view); views[id] = view;
+    });
+
+    const chartGrid = charts?.querySelector('.chart-grid');
+    if (chartGrid && !document.getElementById('weightChart')) {
+        const weightCard = document.createElement('div');
+        weightCard.className = 'chart-card';
+        weightCard.innerHTML = '<h3>Weight Trend</h3><div class="chart-wrap"><canvas id="weightChart"></canvas></div>';
+        chartGrid.insertBefore(weightCard, chartGrid.firstChild);
+    }
+
+    const overview = document.createElement('div');
+    overview.className = 'dashboard-stats'; overview.id = 'dashboardStats';
+    overview.innerHTML = `
+      <div class="stat-card"><div class="stat-label">Calories eaten</div><div class="stat-value" id="quickCalories">0</div><div class="stat-sub" id="quickCaloriesSub">of daily target</div><div class="stat-progress"><span id="quickCaloriesBar"></span></div></div>
+      <div class="stat-card"><div class="stat-label">Protein</div><div class="stat-value" id="quickProtein">0 g</div><div class="stat-sub" id="quickProteinSub">Daily protein target</div><div class="stat-progress"><span id="quickProteinBar"></span></div></div>
+      <div class="stat-card"><div class="stat-label">Steps</div><div class="stat-value" id="quickSteps">0</div><div class="stat-sub">Daily movement</div><div class="stat-progress"><span id="quickStepsBar"></span></div></div>
+      <div class="stat-card"><div class="stat-label">Water</div><div class="stat-value" id="quickWater">Not set</div><div class="stat-sub">Daily intake</div></div>
+      <div class="stat-card"><div class="stat-label">Sleep</div><div class="stat-value" id="quickSleep">Not set</div><div class="stat-sub">Last night</div></div>
+      <div class="stat-card"><div class="stat-label">Weight</div><div class="stat-value" id="quickWeight">Not set</div><div class="stat-sub">Today's check-in</div></div>`;
+    const quickWorkout = document.createElement('div');
+    quickWorkout.id = 'quickWorkoutSummary';
+    quickWorkout.innerHTML = '<strong>Workout today</strong><span id="quickWorkoutText">No exercises logged yet</span>';
+
+    if (controls) views.dashboard.appendChild(controls);
+    if (profileDashboard) views.dashboard.appendChild(profileDashboard);
+    views.dashboard.appendChild(overview);
+    views.dashboard.appendChild(quickWorkout);
+    if (health) views.dashboard.appendChild(health);
+
+    if (exerciseActions && workout) {
+        exerciseActions.className = 'workout-actions';
+        exerciseActions.removeAttribute('style');
+        workout.insertBefore(exerciseActions, workout.querySelector('.workout-table'));
+    }
+    if (workout) {
+        const timer = document.createElement('div');
+        timer.className = 'session-timer'; timer.id = 'sessionTimer';
+        timer.innerHTML = `
+          <div class="session-timer-head"><h3>Workout session</h3><div class="timer-clock" id="timerClock">00:00:00</div></div>
+          <div class="timer-controls"><label for="workoutIntensity" style="font-size:13px;font-weight:700;">Intensity</label><select id="workoutIntensity"><option value="3.5">Light</option><option value="5" selected>Moderate</option><option value="6">Vigorous</option><option value="8">Very vigorous</option></select><button type="button" class="timer-start" id="timerStartBtn" onclick="startWorkoutTimer()">Start session</button><button type="button" class="timer-finish" id="timerFinishBtn" onclick="finishWorkoutTimer()" disabled>Finish session</button></div>
+          <div class="timer-result" id="timerResult">Start the timer when your workout begins. Estimated calories use body weight, intensity and elapsed time, so treat the result as an approximation. Session timing is not yet stored in workout history.</div>`;
+        workout.insertBefore(timer, workout.querySelector('.workout-table'));
+        views.workout.appendChild(workout);
+    }
+    if (meals) views.diet.appendChild(meals);
+    if (charts) views.progress.appendChild(charts);
+    if (historyActions) views.progress.appendChild(historyActions);
+    if (historyPanel) views.progress.appendChild(historyPanel);
+    if (reflection) views.progress.appendChild(reflection);
+
+    const nav = document.createElement('nav'); nav.id = 'bottomNav'; nav.className = 'bottom-nav'; nav.setAttribute('aria-label','Main navigation');
+    nav.innerHTML = `
+      <button type="button" data-tab="dashboard" class="active" onclick="switchTab('dashboard')"><span class="nav-icon">⌂</span><span class="nav-label">Dashboard</span></button>
+      <button type="button" data-tab="workout" onclick="switchTab('workout')"><span class="nav-icon">🏋</span><span class="nav-label">Workout</span></button>
+      <button type="button" data-tab="diet" onclick="switchTab('diet')"><span class="nav-icon">🥗</span><span class="nav-label">Diet</span></button>
+      <button type="button" data-tab="progress" onclick="switchTab('progress')"><span class="nav-icon">↗</span><span class="nav-label">Progress</span></button>`;
+    app.appendChild(nav);
+    switchTab('dashboard');
+    updateQuickStats();
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-view').forEach(view => view.classList.toggle('active', view.dataset.view === tab));
+    document.querySelectorAll('#bottomNav [data-tab]').forEach(button => {
+        const active = button.dataset.tab === tab;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-current', active ? 'page' : 'false');
+    });
+    if (tab === 'progress' && currentUser) {
+        loadProgressCharts();
+    }
+    if (tab === 'dashboard') updateQuickStats();
+}
+
+function updateQuickStats() {
+    const el = id => document.getElementById(id);
+    if (!el('quickCalories')) return;
+    const n = typeof currentNutrition === 'function' ? currentNutrition() : {c:0,p:0,cb:0,f:0};
+    const calorieTarget = Number(userProfile?.calorie_target || 0);
+    const proteinTarget = Number(userProfile?.protein_target || 0);
+    const steps = Number(el('steps')?.value || 0);
+    const stepTarget = Number(userProfile?.avg_steps || 8000) || 8000;
+    el('quickCalories').textContent = Math.round(n.c).toLocaleString();
+    el('quickCaloriesSub').textContent = calorieTarget ? `of ${Math.round(calorieTarget).toLocaleString()} kcal target` : 'Set a profile to add a target';
+    el('quickCaloriesBar').style.width = calorieTarget ? `${Math.min(100,n.c/calorieTarget*100)}%` : '0%';
+    el('quickProtein').textContent = `${Math.round(n.p)} g`;
+    el('quickProteinSub').textContent = proteinTarget ? `of ${Math.round(proteinTarget)} g target` : 'Daily protein';
+    el('quickProteinBar').style.width = proteinTarget ? `${Math.min(100,n.p/proteinTarget*100)}%` : '0%';
+    el('quickSteps').textContent = steps.toLocaleString();
+    el('quickStepsBar').style.width = `${Math.min(100,steps/stepTarget*100)}%`;
+    el('quickWater').textContent = el('water')?.value || 'Not set';
+    el('quickSleep').textContent = el('sleep')?.value || 'Not set';
+    const weight = el('weightToday')?.value;
+    el('quickWeight').textContent = weight ? `${Number(weight).toFixed(1)} kg` : 'Not set';
+    const exerciseCount = document.querySelectorAll('#exerciseRows .workout-grid').length;
+    const setInputs = [...document.querySelectorAll('#exerciseRows input')].filter(input => input.type === 'number' && input.value.trim() !== '');
+    const setCount = Math.floor(setInputs.length / 2);
+    const quickText = el('quickWorkoutText');
+    if (quickText) quickText.textContent = exerciseCount ? `${exerciseCount} exercise${exerciseCount===1?'':'s'} added · ${setCount} set entries filled` : 'No exercises logged yet';
+}
+
+let workoutTimerStartedAt = null;
+let workoutTimerInterval = null;
+let workoutTimerElapsedSeconds = 0;
+function formatWorkoutTime(totalSeconds) {
+    const h = Math.floor(totalSeconds/3600), m = Math.floor((totalSeconds%3600)/60), s = totalSeconds%60;
+    return [h,m,s].map(v=>String(v).padStart(2,'0')).join(':');
+}
+function startWorkoutTimer() {
+    if (workoutTimerStartedAt) return;
+    workoutTimerStartedAt = Date.now() - workoutTimerElapsedSeconds*1000;
+    document.getElementById('timerStartBtn').disabled = true;
+    document.getElementById('timerFinishBtn').disabled = false;
+    document.getElementById('timerResult').textContent = 'Session running. Finish when your workout is complete.';
+    workoutTimerInterval = setInterval(() => {
+        workoutTimerElapsedSeconds = Math.max(0,Math.floor((Date.now()-workoutTimerStartedAt)/1000));
+        const clock = document.getElementById('timerClock'); if(clock) clock.textContent = formatWorkoutTime(workoutTimerElapsedSeconds);
+    }, 1000);
+}
+function finishWorkoutTimer() {
+    if (!workoutTimerStartedAt) return;
+    workoutTimerElapsedSeconds = Math.max(1,Math.floor((Date.now()-workoutTimerStartedAt)/1000));
+    clearInterval(workoutTimerInterval); workoutTimerInterval = null; workoutTimerStartedAt = null;
+    document.getElementById('timerStartBtn').disabled = false;
+    document.getElementById('timerFinishBtn').disabled = true;
+    const minutes = workoutTimerElapsedSeconds/60;
+    const weight = Number(document.getElementById('weightToday')?.value || userProfile?.weight_kg || 0);
+    const met = Number(document.getElementById('workoutIntensity')?.value || 5);
+    const kcal = weight > 0 ? met * 3.5 * weight / 200 * minutes : null;
+    document.getElementById('timerClock').textContent = formatWorkoutTime(workoutTimerElapsedSeconds);
+    document.getElementById('timerResult').textContent = kcal == null
+      ? `Duration: ${formatWorkoutTime(workoutTimerElapsedSeconds)}. Add your body weight in Profile or Daily Health to estimate calories burned.`
+      : `Duration: ${formatWorkoutTime(workoutTimerElapsedSeconds)} · Estimated burn: ${Math.round(kcal)} kcal. This is a rough MET-based estimate, not a measured value. It has not been added to your food/calorie target.`;
+}
+
+
 /* =========================================================
    START APP
    ========================================================= */
 
+buildRedesignedLayout();
+
+// Keep the dashboard snapshot in sync with editable daily values.
+["steps","water","sleep","weightToday"].forEach(id => { const node=document.getElementById(id); if(node) node.addEventListener("input", updateQuickStats); if(node) node.addEventListener("change", updateQuickStats); });
+document.addEventListener("input", event => { if(event.target.closest("#mealRows") || event.target.closest("#exerciseRows")) updateQuickStats(); });
 checkUser();
 
 </script>
